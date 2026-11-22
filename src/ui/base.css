@@ -1,0 +1,597 @@
+/* ============================================================
+   基础：设计变量、重置、通用组件（按钮 / 面板 / 键帽 / 滑块 / 弹窗）
+   ============================================================ */
+
+:root {
+  --bg: #060a13;
+  --ink: #0b1120;
+  --panel: rgba(11, 17, 31, 0.8);
+  --panel-solid: #101829;
+  --panel-hi: #16223a;
+  --line: rgba(160, 190, 255, 0.12);
+  --line-2: rgba(160, 190, 255, 0.26);
+  --text: #eef3ff;
+  --muted: #9aa7c4;
+  --dim: #5f6b87;
+  --accent: #ff8a3d;
+  --accent-2: #ffc44d;
+  --accent-grad: linear-gradient(100deg, #ffc44d 0%, #ff8a3d 55%, #ff5f3d 100%);
+  --ally: #35d6ff;
+  --enemy: #ff4d5e;
+  --good: #3ee39b;
+  --bad: #ff5468;
+  --cut: 0.85rem;
+  --font: 'Avenir Next', 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+  --font-num: 'DIN Alternate', 'Bahnschrift', 'Avenir Next Condensed', 'Avenir Next', 'Roboto Condensed', 'PingFang SC', sans-serif;
+  --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+
+/* 1280×720 ≈ 13px，1920×1080 ≈ 18px，2560×1440 ≈ 24px */
+html {
+  font-size: clamp(12px, calc(0.55vw + 0.55vh + 2px), 24px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  outline: none;
+  background: var(--bg);
+}
+
+#ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------- 题目配图（题干下方的示意图卡片） */
+
+.q-figure {
+  align-self: center;
+  width: 100%;
+  /* 宽度上限同时受高度上限约束（--fig-ar 为配图宽高比），矮屏上不会把选项挤出去 */
+  --fig-h: 30vh;
+  max-width: min(420px, 100%, calc(var(--fig-h) * var(--fig-ar, 1.53)));
+  padding: 0.5rem 0.7rem;
+  background: rgba(4, 8, 16, 0.72);
+  box-shadow:
+    inset 0 0 0 1px var(--line-2),
+    inset 0 0.4rem 1.2rem rgba(0, 0, 0, 0.45);
+  clip-path: polygon(0 0, calc(100% - 0.6rem) 0, 100% 0.6rem, 100% 100%, 0.6rem 100%, 0 calc(100% - 0.6rem));
+  user-select: none;
+  pointer-events: none;
+}
+
+.q-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------- 切角面板 */
+
+.panel {
+  position: relative;
+  background: linear-gradient(160deg, rgba(22, 32, 56, 0.86), rgba(9, 14, 26, 0.9));
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 1.4rem 1.6rem;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--cut);
+  width: 3px;
+  height: 2.2rem;
+  background: var(--tc, var(--accent));
+}
+
+.panel-kicker {
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.panel-kicker::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-2), transparent);
+}
+
+/* ---------------------------------------------------------------- 按钮 */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.78rem 1.7rem;
+  border: 0;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  color: var(--text);
+  background: rgba(24, 36, 62, 0.9);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  clip-path: polygon(0.6rem 0, 100% 0, 100% calc(100% - 0.6rem), calc(100% - 0.6rem) 100%, 0 100%, 0 0.6rem);
+  transition: transform 0.18s var(--ease), filter 0.18s, background 0.18s, box-shadow 0.18s, color 0.18s;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: rgba(36, 52, 88, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(200, 220, 255, 0.5);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible,
+.menu-item:focus-visible,
+.level-card:focus-visible,
+.agent-card:focus-visible,
+.wcard:focus-visible,
+.quiz-opt:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent-grad);
+  color: #1c0d02;
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-grad);
+  box-shadow: none;
+  filter: brightness(1.1) saturate(1.1);
+}
+
+/* 扫光 */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s var(--ease);
+}
+
+.btn-primary:hover::after {
+  left: 120%;
+}
+
+.btn-ghost {
+  background: rgba(10, 16, 30, 0.55);
+}
+
+.btn-danger {
+  background: rgba(255, 77, 94, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 84, 104, 0.55);
+  color: #ffd0d5;
+}
+
+.btn-danger:hover {
+  background: rgba(255, 77, 94, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 120, 135, 0.9);
+}
+
+.btn.sm {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.12em;
+}
+
+.btn-xl {
+  padding: 1.05rem 2.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+}
+
+.btn-back {
+  padding: 0.55rem 1.2rem 0.55rem 1rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  background: rgba(10, 16, 30, 0.6);
+}
+
+.btn-back::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-right: 0.2rem;
+}
+
+/* ---------------------------------------------------------------- 键帽 */
+
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9em;
+  height: 1.9em;
+  padding: 0 0.5em;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--text);
+  background: linear-gradient(180deg, #24324f, #141d31);
+  border-radius: 0.3em;
+  box-shadow:
+    inset 0 0 0 1px rgba(200, 220, 255, 0.28),
+    0 2px 0 rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- 标签 */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: rgba(160, 190, 255, 0.08);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.tag-accent {
+  color: var(--accent-2);
+  background: rgba(255, 196, 77, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 196, 77, 0.35);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  background: rgba(8, 12, 22, 0.66);
+  box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0.4rem 0, 100% 0, 100% calc(100% - 0.4rem), calc(100% - 0.4rem) 100%, 0 100%, 0 0.4rem);
+}
+
+/* ---------------------------------------------------------------- 星星 / 图标 */
+
+.star {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: rgba(160, 190, 255, 0.18);
+  stroke: rgba(160, 190, 255, 0.25);
+  stroke-width: 1;
+}
+
+.star.on {
+  fill: var(--accent-2);
+  stroke: #ffe3a1;
+  filter: drop-shadow(0 0 0.35rem rgba(255, 196, 77, 0.55));
+}
+
+.star.tiny {
+  width: 0.8rem;
+  height: 0.8rem;
+  filter: none;
+}
+
+.star.big {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+
+.cr-ico,
+.spike-ico,
+.lock-ico {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.cr-ico {
+  color: var(--accent-2);
+}
+
+/* ---------------------------------------------------------------- 滑块 */
+
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.6rem;
+  background: transparent;
+  cursor: pointer;
+  --p: 0.5;
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 0.36rem;
+  background: linear-gradient(90deg, var(--accent) 0, var(--accent-2) calc(var(--p) * 100%), rgba(160, 190, 255, 0.16) calc(var(--p) * 100%));
+}
+
+.range::-moz-range-track {
+  height: 0.36rem;
+  background: rgba(160, 190, 255, 0.16);
+}
+
+.range::-moz-range-progress {
+  height: 0.36rem;
+  background: var(--accent);
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1.1rem;
+  height: 1.3rem;
+  margin-top: -0.47rem;
+  background: #fff;
+  clip-path: polygon(50% 0, 100% 30%, 100% 100%, 0 100%, 0 30%);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.range::-moz-range-thumb {
+  width: 1rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+}
+
+/* ---------------------------------------------------------------- 分段选择 */
+
+.seg {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.seg-btn {
+  min-width: 4.2rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  background: rgba(10, 16, 30, 0.6);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  clip-path: polygon(0.45rem 0, 100% 0, 100% calc(100% - 0.45rem), calc(100% - 0.45rem) 100%, 0 100%, 0 0.45rem);
+  transition: background 0.15s, color 0.15s;
+}
+
+.seg-btn:hover {
+  background: rgba(36, 52, 88, 0.9);
+}
+
+.seg-btn.is-active {
+  background: var(--accent-grad);
+  color: #1c0d02;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- 弹窗 */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(3, 6, 12, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  pointer-events: auto;
+  animation: fade-in 0.2s ease-out;
+}
+
+.modal-panel {
+  width: min(44rem, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 1.8rem 2rem;
+  animation: rise-in 0.32s var(--ease);
+}
+
+.modal-panel.practice {
+  width: min(56rem, 94vw);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+
+.modal-msg {
+  color: var(--muted);
+  margin-bottom: 1.4rem;
+}
+
+.modal-acts {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.notice {
+  position: fixed;
+  left: 50%;
+  bottom: 8vh;
+  transform: translateX(-50%);
+  z-index: 70;
+  padding: 0.9rem 1.6rem;
+  background: rgba(255, 77, 94, 0.9);
+  color: #fff;
+  font-weight: 700;
+  clip-path: polygon(0.6rem 0, 100% 0, 100% calc(100% - 0.6rem), calc(100% - 0.6rem) 100%, 0 100%, 0 0.6rem);
+}
+
+/* ---------------------------------------------------------------- 动画 */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.2rem);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-1.6rem);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-30deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.25) rotate(6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* 启动加载界面 */
+.boot-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: radial-gradient(ellipse at 50% 40%, #16203a 0%, #070a12 75%);
+  color: #e8eef7;
+  font-family: 'Avenir Next', 'PingFang SC', 'HarmonyOS Sans SC', sans-serif;
+}
+.boot-title {
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+.boot-sub {
+  color: #8fa0b8;
+  letter-spacing: 0.15em;
+}
+.boot-bar {
+  width: min(28rem, 60vw);
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.boot-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ffb347, #ff6a3d);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease-out;
+}
+.boot-pct {
+  font-variant-numeric: tabular-nums;
+  color: #8fa0b8;
+}
+
+/* 联机对战里本机在红队：按真实队伍上色（我方红、对方蓝）。由 Match 开局时在 <html> 上切换 */
+:root.team-red {
+  --ally: #ff4d5e;
+  --enemy: #35d6ff;
+}

@@ -1,0 +1,670 @@
+/* ============================================================
+   小屏 / 触屏设备的界面布局（手机横屏、iPad），放在最后以覆盖默认样式
+   断点：
+   - 矮屏（手机横屏，高 ≤ 560px）：紧凑排版、各屏幕可滚动、购买菜单分页签；
+   - 窄屏（宽 ≤ 1180px，如 iPad 横屏）：列数减少。
+   字号下限：根字号 12px；正文类不小于 0.92rem（约 11px），按钮文字不小于 13px。
+   ============================================================ */
+
+/* ---------------------------------------------------------------- 通用 */
+
+.buy-tabs {
+  display: none;
+}
+
+.btn-hide {
+  margin-left: auto;
+}
+
+.btn-hide + .btn-deploy {
+  margin-left: 0;
+}
+
+/* 触屏没有悬停：去掉只靠悬停才出现的效果带来的位移，按下时给反馈 */
+html.touch .menu-item:active,
+html.touch .btn:active,
+html.touch .level-card:active,
+html.touch .agent-card:active,
+html.touch .wcard:active,
+html.touch .quiz-opt:active:not(:disabled),
+html.touch .seg-btn:active,
+html.touch .map-chip:active,
+html.touch .grade-tab:active {
+  filter: brightness(1.3);
+}
+
+html.touch .screen-body,
+html.touch .level-grid,
+html.touch .brief,
+html.touch .buy-shop,
+html.touch .buy-quiz,
+html.touch .res-panel,
+html.touch .res-review,
+html.touch .wrong-list {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* 操作说明：触屏操作面板独占一行（触屏时在最上面，键鼠时在最下面） */
+.help-screen .screen-body {
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.help-screen .help-touch {
+  flex: 1 1 100%;
+}
+
+.help-touch .rule {
+  grid-template-columns: 7.5rem 1fr;
+}
+
+/* ---------------------------------------------------------------- 窄屏（iPad 横屏等） */
+
+@media (max-width: 1180px) {
+  .wp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .agent-blurb {
+    font-size: 0.92rem;
+  }
+}
+
+/* ---------------------------------------------------------------- 矮屏：手机横屏 */
+
+@media (max-height: 560px) {
+  .screen {
+    padding-top: max(env(safe-area-inset-top, 0px), 0.7rem);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.6rem);
+    padding-left: max(env(safe-area-inset-left, 0px), 1.1rem);
+    padding-right: max(env(safe-area-inset-right, 0px), 1.1rem);
+  }
+  .screen-head {
+    margin-bottom: 0.6rem;
+    gap: 1rem;
+  }
+  .screen-kicker {
+    font-size: 0.75rem;
+    margin-bottom: 0.1rem;
+  }
+  .screen-h {
+    font-size: 1.6rem;
+  }
+  .screen-body {
+    gap: 0.9rem;
+  }
+  .btn-back {
+    min-height: 44px;
+  }
+
+  /* 标题 */
+  .title-screen {
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+    grid-template-rows: 1fr;
+    gap: 1rem;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.8rem);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.8rem);
+    overflow-y: auto;
+  }
+  .title-foot {
+    display: none;
+  }
+  .title-left {
+    gap: 0.7rem;
+    justify-content: flex-start;
+  }
+  .logo {
+    gap: 0.9rem;
+  }
+  .logo-emblem {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
+  .wordmark {
+    font-size: 2.6rem;
+  }
+  .logo-sub {
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+  .title-menu {
+    gap: 0.35rem;
+  }
+  .menu-item {
+    padding: 0.35rem 1.1rem 0.35rem 0.8rem;
+    min-height: 46px;
+    align-items: center;
+  }
+  .menu-item .btn-label {
+    font-size: 1.3rem;
+  }
+  .menu-item.is-primary .btn-label {
+    font-size: 1.45rem;
+  }
+  .menu-hint {
+    font-size: 0.85rem;
+  }
+  .title-right {
+    justify-content: flex-start;
+  }
+  .profile {
+    padding: 0.9rem 1rem 1rem;
+  }
+  .profile-stars {
+    margin: 0.3rem 0 0.5rem;
+  }
+  .profile-stars .star.big {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .ps-num {
+    font-size: 2.4rem;
+  }
+  .pg-cell {
+    padding: 0.4rem 0.7rem;
+  }
+  .pg-v {
+    font-size: 1.4rem;
+  }
+  .profile-agent {
+    margin-top: 0.6rem;
+  }
+
+  /* 选关：左侧关卡网格滚动，右侧简报滚动，「出击」吸底 */
+  .grade-tabs {
+    gap: 0.35rem;
+  }
+  .grade-tab {
+    padding: 0.35rem 0.6rem;
+    min-height: 44px;
+  }
+  .grade-tab .btn-label {
+    font-size: 1.1rem;
+  }
+  .gt-theme,
+  .gt-stars {
+    font-size: 0.8rem;
+  }
+  .level-main {
+    gap: 0.6rem;
+  }
+  .level-grid,
+  .level-grid[data-rows='2'],
+  .level-grid[data-rows='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    align-content: start;
+    gap: 0.45rem;
+    padding-right: 0.2rem;
+  }
+  .level-card,
+  .level-grid[data-rows='2'] .level-card,
+  .level-grid[data-rows='3'] .level-card {
+    min-height: 6.8rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .level-grid .lc-num {
+    font-size: 1.5rem;
+  }
+  .level-grid .lc-name {
+    font-size: 1rem;
+  }
+  .level-grid .lc-sub {
+    display: none;
+  }
+  .brief {
+    width: 17rem;
+    flex: none;
+    padding: 0.8rem 0.9rem 0;
+  }
+  .brief-title {
+    font-size: 1.4rem;
+  }
+  .brief-facts {
+    gap: 0.4rem 0.8rem;
+    margin: 0.5rem 0;
+  }
+  .brief .btn-xl {
+    position: sticky;
+    bottom: 0;
+    margin-top: 0.6rem;
+    min-height: 52px;
+    font-size: 1.4rem;
+    z-index: 1;
+  }
+  .brief .btn-xl::after {
+    content: '';
+  }
+  .map-chips {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .map-chip {
+    min-height: 40px;
+    font-size: 0.92rem;
+  }
+  .brief-agent .btn {
+    min-height: 40px;
+  }
+
+  /* 角色：卡片横向排列、整页可滚动 */
+  .agent-screen .screen-body {
+    overflow-y: auto;
+    display: block;
+  }
+  .agent-row {
+    gap: 0.6rem;
+  }
+  .agent-card {
+    padding: 0.8rem 0.9rem;
+  }
+  .agent-top {
+    gap: 0.7rem;
+  }
+  .agent-glyph {
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.6rem;
+  }
+  .agent-name {
+    font-size: 1.5rem;
+  }
+  .agent-blurb {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin: 0.4rem 0;
+  }
+  .ab-row {
+    gap: 0.5rem;
+  }
+  .ab-icon {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  .ab-desc {
+    font-size: 0.85rem;
+  }
+  .agent-sel {
+    min-height: 40px;
+  }
+  /* 有角色图的卡：三张并排，未选中的只显示名字和技能名，选中的显示全部说明 */
+  .agent-card.has-art {
+    min-height: calc(100vh - 6.5rem);
+  }
+  .agent-card.has-art .agent-body {
+    padding: 0.6rem 0.75rem 0.7rem;
+    gap: 0.4rem;
+  }
+  .agent-card.has-art .agent-blurb,
+  .agent-card.has-art:not(.is-selected) .ab-desc,
+  .agent-card.has-art:not(.is-selected) .ab-extra {
+    display: none;
+  }
+  .agent-card.has-art .agent-blurb {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+  .agent-card.has-art .agent-abs {
+    gap: 0.4rem;
+  }
+  .agent-card.has-art .ab-name {
+    font-size: 0.92rem;
+  }
+  .agent-card.has-art .ab-desc {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  .agent-card.has-art .agent-shade {
+    background: linear-gradient(180deg, transparent 0%, transparent 22%, rgba(5, 8, 15, 0.65) 40%, rgba(5, 8, 15, 0.93) 56%, rgba(5, 8, 15, 0.97) 100%);
+  }
+  .agent-card.is-selected {
+    transform: none;
+  }
+
+  /* 设置 / 说明 / 错题本：整页滚动 */
+  .settings-screen .screen-body,
+  .help-screen .screen-body {
+    overflow-y: auto;
+    display: block;
+  }
+  .settings-panel {
+    max-width: none;
+    padding: 0.9rem 1.1rem;
+  }
+  .set-row {
+    padding: 0.45rem 0;
+  }
+  .help-screen .panel {
+    margin-bottom: 0.8rem;
+  }
+  .rule {
+    grid-template-columns: 6.5rem 1fr;
+  }
+  .wrong-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* 购买：页签切换军械库 / 补给站，头尾固定 */
+  .buy {
+    padding: max(env(safe-area-inset-top, 0px), 0.5rem) max(env(safe-area-inset-right, 0px), 0.9rem) max(env(safe-area-inset-bottom, 0px), 0.5rem)
+      max(env(safe-area-inset-left, 0px), 0.9rem);
+  }
+  .buy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .buy-panel {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    gap: 0.45rem;
+  }
+  .buy-head {
+    gap: 0.8rem;
+    padding-bottom: 0.4rem;
+    align-items: center;
+  }
+  .buy-title .screen-kicker {
+    display: none;
+  }
+  .buy-title .screen-h {
+    font-size: 1.4rem;
+  }
+  .buy-meta {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+  .buy-meta > * {
+    font-size: 0.85rem;
+    padding: 0.2rem 0.5rem;
+  }
+  .buy-credits {
+    font-size: 1.7rem;
+  }
+  .buy-credits .cr-ico {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .buy-tabs {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .buy-tab {
+    flex: 1;
+    min-height: 40px;
+    border: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    background: rgba(14, 22, 40, 0.75);
+    box-shadow: inset 0 0 0 1px var(--line-2);
+    cursor: pointer;
+  }
+  .buy-tab.is-active {
+    color: #1c0d02;
+    background: var(--accent-grad);
+    box-shadow: none;
+  }
+  .buy-cols {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+  }
+  .buy.tab-quiz .buy-shop,
+  .buy.tab-shop .buy-quiz {
+    display: none;
+  }
+  .buy-shop .sec-head,
+  .buy-quiz > .sec-head {
+    display: none;
+  }
+  .wp-grid,
+  .armor-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+  .wcard {
+    padding: 0.5rem 0.7rem;
+  }
+  .wc-desc,
+  .wc-stats,
+  .bg-hint {
+    display: none;
+  }
+  .buy-cat {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+  .wc-refund {
+    min-height: 30px;
+    font-size: 0.85rem;
+  }
+  .wc-name {
+    font-size: 1.15rem;
+  }
+  .buy-quiz {
+    padding: 0.6rem 0.9rem;
+  }
+  .qs-steps {
+    gap: 0.3rem;
+  }
+  .qs-step {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  .qs-intro,
+  .qs-done {
+    padding: 0.6rem 0.2rem;
+    gap: 0.6rem;
+  }
+  .qs-intro-t,
+  .qs-done-big {
+    font-size: 1.3rem;
+  }
+  /* 题卡左右排：左边题干 + 配图，右边选项，题目、配图、选项同屏可见 */
+  .quiz-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-areas: 'meta meta' 'text opts' 'fig opts' 'res res';
+    grid-template-rows: auto auto 1fr auto;
+    gap: 0.45rem 0.8rem;
+  }
+  .quiz-card > .quiz-meta {
+    grid-area: meta;
+  }
+  .quiz-card > .quiz-text {
+    grid-area: text;
+  }
+  .quiz-card > .q-figure {
+    grid-area: fig;
+    align-self: start;
+  }
+  .quiz-card > .quiz-opts {
+    grid-area: opts;
+    align-content: start;
+  }
+  .quiz-card > .quiz-result {
+    grid-area: res;
+  }
+  .quiz-text {
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+  .buy-quiz .q-figure {
+    --fig-h: 30vh;
+  }
+  .quiz-opts {
+    gap: 0.4rem;
+  }
+  .quiz-opt {
+    padding: 0.45rem 0.8rem;
+    min-height: 46px;
+    font-size: 1.1rem;
+  }
+  .quiz-result {
+    padding: 0.5rem 0.8rem;
+  }
+  .qs-acts {
+    margin-top: 0.4rem;
+  }
+  .buy-foot {
+    gap: 0.6rem;
+    padding-top: 0;
+  }
+  .buy-tip {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  .btn-hide {
+    min-height: 46px;
+    padding: 0 1rem;
+    white-space: nowrap;
+  }
+  .btn-deploy {
+    min-width: 0;
+    min-height: 50px;
+    padding: 0.4rem 1.6rem;
+    font-size: 1.35rem;
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    white-space: nowrap;
+  }
+
+  /* 局内解题面板：占满下半屏以上，选项一行两个 */
+  .focus {
+    top: auto;
+    bottom: max(env(safe-area-inset-bottom, 0px), 0.4rem);
+    width: min(54rem, calc(100vw - 1.2rem));
+    max-height: calc(100dvh - 5.2rem);
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem 0.7rem;
+  }
+  .focus-title {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+  }
+  .focus-sub {
+    font-size: 0.8rem;
+  }
+  .focus-q,
+  .focus.has-fig .focus-q {
+    font-size: 1.15rem;
+    line-height: 1.45;
+  }
+  .focus .focus-fig {
+    height: min(30vh, 14rem);
+  }
+  .focus-opts {
+    gap: 0.4rem;
+  }
+  .focus-opt,
+  .focus.has-fig .focus-opt {
+    padding-block: 0.3rem;
+    font-size: 1.05rem;
+  }
+
+  /* 计分板 */
+  .scoreboard {
+    width: calc(100vw - 1.2rem);
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
+    padding: 0.7rem 0.9rem;
+    gap: 0.5rem;
+  }
+
+  /* 暂停 */
+  .pause {
+    padding-block: 0.5rem;
+  }
+  .pause-panel {
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
+    padding: 0.8rem 1.1rem;
+  }
+  .pause-head {
+    gap: 0.7rem;
+  }
+  .pause-emblem {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+  .pause-score {
+    margin: 0.3rem 0 0.5rem;
+  }
+
+  /* 结算：两栏都可滚动 */
+  .results {
+    padding-block: 0.5rem;
+  }
+  .res-panel {
+    max-height: calc(100dvh - 1rem);
+    grid-template-columns: minmax(16rem, 0.9fr) minmax(0, 1.1fr);
+    overflow: hidden;
+  }
+  .res-left {
+    overflow-y: auto;
+    gap: 0.6rem;
+  }
+  .res-title {
+    font-size: 2.4rem;
+  }
+  .res-review {
+    overflow-y: auto;
+  }
+
+  /* 触屏 HUD：手机上再紧凑一些 */
+  html.touch .tc-stick {
+    translate: calc(var(--sa-l) + 150px) calc(100dvh - var(--sa-b) - 92px);
+  }
+  html.touch .cr-chip {
+    display: none;
+  }
+  html.touch .tc-fire2 {
+    top: auto;
+    bottom: calc(var(--sa-b) + 128px);
+  }
+}
+
+/* 很矮的屏（如 667×375）：再压缩一点 */
+@media (max-height: 400px) {
+  html.touch .minimap {
+    width: min(9rem, 24vh);
+  }
+  html.touch .hud-bl {
+    top: calc(var(--sa-t) + 1rem + min(9rem, 24vh));
+  }
+  .menu-item .btn-label {
+    font-size: 1.15rem;
+  }
+}
+
+/* 窄手机（如 667×375）：武器栏只显示弹药，技能栏左移，给蹲键让位 */
+@media (max-width: 760px) {
+  html.touch .wp-id {
+    display: none;
+  }
+  html.touch .wp-mag {
+    font-size: 1.9rem;
+  }
+  html.touch .hud-bc {
+    left: calc(50% - 44px);
+  }
+  html.touch .abilities {
+    gap: 10px;
+  }
+  html.touch .ab {
+    width: 56px;
+  }
+  html.touch .ab-face,
+  html.touch .ab.ult .ab-face {
+    width: 56px;
+    height: 56px;
+  }
+  html.touch .tc-crouch {
+    right: calc(var(--sa-r) + 212px);
+  }
+}

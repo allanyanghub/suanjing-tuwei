@@ -1,0 +1,16 @@
+# 在群晖 Container Manager 里用"项目"导入本文件即可。
+services:
+  suanjing:
+    build: .
+    image: suanjing-tuwei:latest
+    container_name: suanjing-tuwei
+    restart: unless-stopped
+    ports:
+      - "8080:8080"          # 局域网内用 http://NAS地址:8080 打开游戏
+    environment:
+      # 家长管理页面（http://NAS地址:8080/admin）的密码。留空则关闭管理页面。
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-}"
+      # 时区：决定"今天""本周"和可玩时间段怎么算。容器默认是 UTC，不设会差 8 小时。
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ./data:/data         # 玩家账号和存档（一个 SQLite 文件），请定期备份这个文件夹

@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>算境突围 · 家长管理</title>
+<style>
+:root{
+  --bg:#f4f6fb;--panel:#fff;--panel2:#f7f9fc;--line:#e3e8f0;--text:#1c2433;--muted:#667085;--accent:#3b6ff5;--accent-soft:#e8eefe;
+  --good:#1f9d63;--good-soft:#e3f6ec;--warn:#c77700;--warn-soft:#fff3dc;--bad:#d23c4b;--bad-soft:#fde8ea;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+  --radius:12px;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1420;--panel:#171e2d;--panel2:#1c2436;--line:#2a3449;--text:#e6ebf4;--muted:#93a0b6;--accent:#6c95ff;--accent-soft:#1f2c4d;
+  --good:#3ccf8e;--good-soft:#15362a;--warn:#f0b042;--warn-soft:#3a2d12;--bad:#ff7a87;--bad-soft:#3d1c22;--shadow:none;color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+.hidden{display:none!important}
+header.top{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line)}
+.top .in{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:700;letter-spacing:.06em;white-space:nowrap}
+.brand small{font-weight:400;color:var(--muted);margin-left:6px;letter-spacing:0}
+nav.main{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+nav.main::-webkit-scrollbar{display:none}
+nav.main a{padding:6px 12px;border-radius:999px;color:var(--muted);white-space:nowrap}
+nav.main a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+main{max-width:1120px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:22px;margin:4px 0 14px} h2{font-size:17px;margin:22px 0 10px} h3{font-size:15px;margin:14px 0 8px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.kid{cursor:pointer;transition:border-color .15s}
+.kid:hover{border-color:var(--accent)}
+.kid .name{font-size:18px;font-weight:700}
+.kid .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted)}
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(122px,1fr))}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .k{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.badge.good{background:var(--good-soft);color:var(--good);border-color:transparent}
+.badge.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.badge.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.badge.acc{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;margin:0 0 16px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{padding:9px 14px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs a.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{color:var(--bad);border-color:var(--bad-soft)}
+.btn.danger:hover{border-color:var(--bad)}
+.btn.sm{padding:3px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+.form{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.form .full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+label.f>span.hint{font-size:12px}
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=time],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text)}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+label.chk{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--text);font-size:14px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{color:var(--muted);font-weight:500;font-size:12px;background:var(--panel2);white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;min-width:80px}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.bar.done>i{background:var(--good)}
+.task{display:flex;flex-direction:column;gap:8px}
+.task .t{font-weight:700}
+.list{display:flex;flex-direction:column;gap:10px}
+.chart{width:100%;overflow:hidden}
+.chart svg{display:block}
+.chart text{fill:var(--muted);font-size:12px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.callout{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:8px}
+.wrong{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.wrong .q{white-space:pre-line;font-weight:600;margin:6px 0}
+.wrong .opt{padding:2px 0}
+.wrong .opt.good{color:var(--good);font-weight:600}.wrong .opt.bad{color:var(--bad)}
+.fig{max-width:320px;background:#fff;border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:4px}
+.fig svg{max-width:100%;height:auto}
+.msg{white-space:pre-line}
+.empty{padding:26px;text-align:center;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;z-index:50}
+#toast.show{opacity:.95} #toast.err{background:var(--bad);color:#fff}
+.login{max-width:380px;margin:12vh auto 0}
+.login h1{text-align:center}
+.est{background:var(--accent-soft);color:var(--text);border-radius:8px;padding:10px 14px;font-size:14px}
+.windows .w{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.windows .w input{max-width:130px}
+.optrow{display:flex;gap:8px;align-items:center}
+.optrow input[type=radio]{width:18px;height:18px;flex:none}
+.podium li{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px dashed var(--line)}
+.podium li:last-child{border-bottom:0}
+.podium{list-style:none;margin:0;padding:0}
+.rank{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:var(--panel2);flex:none}
+.rank.r1{background:#ffd34d;color:#5a4300}.rank.r2{background:#d5dbe5;color:#39424f}.rank.r3{background:#f0b58a;color:#5b2d0c}
+@media (max-width:640px){
+  .top .in{flex-wrap:wrap;gap:6px;padding:8px 12px}
+  nav.main{order:3;flex-basis:100%}
+  #logout{margin-left:auto}
+  .tbl.wide table{min-width:560px}
+  .tbl td,.tbl th{white-space:nowrap}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  main{padding:14px 12px 60px}
+  h1{font-size:19px}
+  .kid .stats{grid-template-columns:repeat(3,1fr)}
+  th,td{padding:7px 8px}
+}
+</style>
+</head>
+<body>
+<div id="login" class="hidden">
+  <div class="login card">
+    <h1>算境突围 · 家长管理</h1>
+    <p class="muted small" style="text-align:center">请输入家长管理密码。</p>
+    <form id="loginForm" class="list">
+      <input id="pw" type="password" placeholder="家长管理密码" autocomplete="current-password">
+      <button class="btn pri" type="submit">进入</button>
+      <div id="loginErr" class="small" style="color:var(--bad);min-height:1.4em"></div>
+    </form>
+  </div>
+</div>
+<div id="app" class="hidden">
+  <header class="top"><div class="in">
+    <div class="brand">算境突围<small>家长管理</small></div>
+    <nav class="main" id="nav">
+      <a href="#/" data-nav="home">总览</a>
+      <a href="#/questions" data-nav="questions">自定义题目</a>
+      <a href="#/messages" data-nav="messages">留言</a>
+      <a href="#/leaderboard" data-nav="leaderboard">排行榜</a>
+      <a href="#/settings" data-nav="settings">设置</a>
+    </nav>
+    <button class="btn sm" id="logout" type="button">退出</button>
+  </div></header>
+  <main id="view"></main>
+</div>
+<div id="toast"></div>
+<script>
+'use strict';
+// ------------------------------------------------------------ 基础工具
+const $ = (s, root) => (root || document).querySelector(s);
+const $$ = (s, root) => Array.from((root || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const state = { pw: '', players: [], catalog: null, renderSeq: 0, redraw: null };
+try { state.pw = sessionStorage.getItem('sj-admin-pw') || ''; } catch (e) { /* 隐私模式 */ }
+
+const GRADE = { 3: '三年级', 4: '四年级', 5: '五年级', 6: '六年级' };
+const CTX = { gate: '门槛题', bonus: '加分题', plant: '安放', defuse: '拆除', revive: '复活', practice: '练习', custom: '家长出题' };
+const DIFF = { 1: '基础', 2: '提高', 3: '挑战' };
+const KINDS = {
+  clear_level: '通关指定关卡', clear_count: '通关若干关卡', correct_in_topic: '某专题答对若干题',
+  correct_total: '累计答对若干题', accuracy: '正确率达标', streak: '连续答对',
+};
+const STATUS = { active: ['进行中', 'acc'], done: ['已完成', 'good'], expired: ['已过期', 'bad'], archived: ['已归档', ''] };
+
+const pad = (n) => String(n).padStart(2, '0');
+function fmtTime(t) { if (!t) return '—'; const d = new Date(t); return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function fmtDay(t) { if (!t) return '—'; const d = new Date(t); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function fmtMin(sec) { if (sec == null) return '不限'; const m = Math.round(sec / 60); return m >= 60 ? Math.floor(m / 60) + ' 小时 ' + (m % 60) + ' 分' : m + ' 分钟'; }
+function fmtMs(ms) { return ms == null ? '—' : (ms / 1000).toFixed(1) + ' 秒'; }
+const pctTxt = (v) => (v == null ? '—' : v + '%');
+const topicName = (id) => { if (id === 'custom') return '家长出题'; const t = state.catalog && state.catalog.topics.find((x) => x.id === id); return t ? t.name : id; };
+const levelName = (id) => { const l = state.catalog && state.catalog.levels.find((x) => x.id === id); return l ? l.name + '（' + id + '）' : id; };
+const accBadge = (v) => (v == null ? '<span class="badge">—</span>' : '<span class="badge ' + (v >= 80 ? 'good' : v >= 60 ? 'warn' : 'bad') + '">' + v + '%</span>');
+
+let toastTimer = 0;
+function toast(text, err) {
+  const t = $('#toast');
+  t.textContent = text;
+  t.className = 'show' + (err ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (t.className = ''), err ? 4200 : 2200);
+}
+
+async function api(path, method, body) {
+  if (!/^[\x20-\x7e]*$/.test(state.pw)) { showLogin('家长管理密码只会是英文字母、数字和符号，请检查输入法'); throw new Error('密码格式不对'); }
+  const r = await fetch(path, {
+    method: method || 'GET',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': state.pw },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  let j = {};
+  try { j = await r.json(); } catch (e) { /* 非 JSON */ }
+  if (r.status === 403 && /密码|管理功能/.test(j.error || '')) { showLogin(j.error); throw new Error(j.error); }
+  if (!r.ok) throw new Error(j.error || '请求失败（' + r.status + '）');
+  return j;
+}
+
+/** 包一层：出错时弹提示 */
+function act(fn) {
+  return async (ev) => {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    try { await fn(ev); } catch (e) { toast(e.message || String(e), true); }
+  };
+}
+const on = (el, ev, fn) => el && el.addEventListener(ev, act(fn));
+const numOrNull = (v) => (v === '' || v == null ? null : Number(v));
+
+// ------------------------------------------------------------ 图表（内联 SVG）
+const svgEl = (w, h, inner) => '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" role="img">' + inner + '</svg>';
+const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/** 横向条形图：每行一个专题的正确率 */
+function topicBars(el, rows) {
+  const W = Math.max(300, el.clientWidth);
+  const labelW = Math.min(150, Math.round(W * 0.34));
+  const valW = 78;
+  const rowH = 26;
+  const H = rows.length * rowH + 8;
+  const bw = W - labelW - valW - 8;
+  const acc = cssVar('--accent'), bad = cssVar('--bad'), track = cssVar('--panel2'), line = cssVar('--line');
+  let s = '';
+  rows.forEach((r, i) => {
+    const y = i * rowH + 4;
+    const v = r.accuracy == null ? 0 : r.accuracy;
+    const name = r.name.length > 9 ? r.name.slice(0, 8) + '…' : r.name;
+    s += '<text x="' + (labelW - 8) + '" y="' + (y + 15) + '" text-anchor="end"' + (r.weak ? ' style="fill:' + bad + ';font-weight:600"' : '') + '>' + esc(name) + '</text>';
+    s += '<rect x="' + labelW + '" y="' + (y + 5) + '" width="' + bw + '" height="12" rx="6" fill="' + track + '" stroke="' + line + '"/>';
+    s += '<rect x="' + labelW + '" y="' + (y + 5) + '" width="' + Math.max(0, (bw * v) / 100) + '" height="12" rx="6" fill="' + (r.weak ? bad : acc) + '"/>';
+    s += '<text x="' + (labelW + bw + 6) + '" y="' + (y + 15) + '">' + (r.accuracy == null ? '—' : r.accuracy + '%') + ' · ' + r.answered + '题</text>';
+    s += '<title>' + esc(r.name) + '</title>';
+  });
+  // 60% 参考线
+  const x60 = labelW + bw * 0.6;
+  s += '<line x1="' + x60 + '" x2="' + x60 + '" y1="0" y2="' + H + '" stroke="' + line + '" stroke-dasharray="3 3"/>';
+  el.innerHTML = svgEl(W, H, s);
+}
+
+/** 30 天活动：柱子 = 答题数，折线 = 正确率 */
+function activityChart(el, days) {
+  const W = Math.max(300, el.clientWidth);
+  const H = 190, top = 12, bottom = 26, left = 30, right = 34;
+  const ih = H - top - bottom, iw = W - left - right;
+  const max = Math.max(5, ...days.map((d) => d.answered));
+  const step = iw / days.length;
+  const acc = cssVar('--accent'), good = cssVar('--good'), line = cssVar('--line');
+  let s = '';
+  for (let k = 0; k <= 2; k++) {
+    const y = top + ih - (ih * k) / 2;
+    s += '<line x1="' + left + '" x2="' + (W - right) + '" y1="' + y + '" y2="' + y + '" stroke="' + line + '"/>';
+    s += '<text x="' + (left - 4) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round((max * k) / 2) + '</text>';
+    s += '<text x="' + (W - right + 4) + '" y="' + (y + 4) + '">' + 50 * k + '%</text>';
+  }
+  const pts = [];
+  days.forEach((d, i) => {
+    const x = left + i * step;
+    const h = (ih * d.answered) / max;
+    if (d.answered) s += '<rect x="' + (x + step * 0.15) + '" y="' + (top + ih - h) + '" width="' + Math.max(1, step * 0.7) + '" height="' + h + '" rx="2" fill="' + acc + '" opacity=".75"><title>' + d.day + '：' + d.answered + ' 题，正确率 ' + pctTxt(d.accuracy) + '</title></rect>';
+    if (d.accuracy != null) pts.push([x + step / 2, top + ih - (ih * d.accuracy) / 100]);
+    if (i % 5 === 4 || i === days.length - 1) s += '<text x="' + (x + step / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + d.day.slice(5) + '</text>';
+  });
+  if (pts.length > 1) s += '<polyline fill="none" stroke="' + good + '" stroke-width="2" points="' + pts.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ') + '"/>';
+  pts.forEach((p) => (s += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.5" fill="' + good + '"/>'));
+  el.innerHTML = svgEl(W, H, s);
+}
+
+/** 14 天游戏时长柱状图（分钟） */
+function playChart(el, days) {
+  const W = Math.max(300, el.clientWidth);
+  const H = 170, top = 16, bottom = 26, left = 34, right = 8;
+  const ih = H - top - bottom, iw = W - left - right;
+  const mins = days.map((d) => Math.round(d.seconds / 60));
+  const max = Math.max(30, ...mins);
+  const step = iw / days.length;
+  const acc = cssVar('--accent'), line = cssVar('--line'), text = cssVar('--text');
+  let s = '';
+  for (let k = 0; k <= 2; k++) {
+    const y = top + ih - (ih * k) / 2;
+    s += '<line x1="' + left + '" x2="' + (W - right) + '" y1="' + y + '" y2="' + y + '" stroke="' + line + '"/>';
+    s += '<text x="' + (left - 4) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round((max * k) / 2) + '</text>';
+  }
+  days.forEach((d, i) => {
+    const x = left + i * step;
+    const h = (ih * mins[i]) / max;
+    s += '<rect x="' + (x + step * 0.18) + '" y="' + (top + ih - h) + '" width="' + step * 0.64 + '" height="' + h + '" rx="3" fill="' + acc + '"><title>' + d.day + '：' + mins[i] + ' 分钟' + (d.bonusMinutes ? '（家长加时 ' + d.bonusMinutes + ' 分）' : '') + '</title></rect>';
+    if (mins[i]) s += '<text x="' + (x + step / 2) + '" y="' + (top + ih - h - 3) + '" text-anchor="middle" style="fill:' + text + '">' + mins[i] + '</text>';
+    if (i % 2 === 1 || days.length < 8) s += '<text x="' + (x + step / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + d.day.slice(5) + '</text>';
+  });
+  el.innerHTML = svgEl(W, H, s);
+}
+
+// ------------------------------------------------------------ 配图安全检查
+/** 错题配图由游戏生成后存入存档；这里只接受 <svg 开头、不含脚本的内容，并再清理一遍危险元素和属性 */
+function safeSvg(fig) {
+  if (typeof fig !== 'string' || !fig.startsWith('<svg') || /<script|on\w+=|javascript:/i.test(fig)) return '';
+  try {
+    const doc = new DOMParser().parseFromString(fig, 'image/svg+xml');
+    if (doc.querySelector('parsererror')) return '';
+    doc.querySelectorAll('script,foreignObject,iframe,a,use,image').forEach((n) => n.remove());
+    doc.querySelectorAll('*').forEach((n) => {
+      for (const a of Array.from(n.attributes)) if (/^on/i.test(a.name) || /href$/i.test(a.name)) n.removeAttribute(a.name);
+    });
+    return new XMLSerializer().serializeToString(doc.documentElement);
+  } catch (e) {
+    return '';
+  }
+}
+
+// ------------------------------------------------------------ 登录与路由
+function showLogin(msg) {
+  state.pw = '';
+  try { sessionStorage.removeItem('sj-admin-pw'); } catch (e) { /* 忽略 */ }
+  $('#app').classList.add('hidden');
+  $('#login').classList.remove('hidden');
+  $('#loginErr').textContent = msg || '';
+  setTimeout(() => $('#pw').focus(), 0);
+}
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  state.pw = $('#pw').value;
+  if (!state.pw) return;
+  try {
+    await enter();
+    try { sessionStorage.setItem('sj-admin-pw', state.pw); } catch (err) { /* 忽略 */ }
+    $('#pw').value = '';
+  } catch (err) {
+    $('#loginErr').textContent = err.message;
+  }
+});
+$('#logout').addEventListener('click', () => { showLogin(''); location.hash = '#/'; });
+
+async function enter() {
+  const [players, cat] = await Promise.all([api('/api/admin/players'), api('/api/catalog').catch(() => ({ catalog: null }))]);
+  state.players = players.players;
+  state.catalog = cat.catalog;
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  route();
+}
+
+async function refreshPlayers() { state.players = (await api('/api/admin/players')).players; }
+
+window.addEventListener('hashchange', () => route());
+let resizeTimer = 0;
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => state.redraw && state.redraw(), 150); });
+
+async function route() {
+  if ($('#app').classList.contains('hidden')) return;
+  const parts = (location.hash.replace(/^#\/?/, '') || '').split('/').filter(Boolean);
+  const seq = ++state.renderSeq;
+  state.redraw = null;
+  const view = $('#view');
+  const navKey = parts[0] === 'p' ? 'home' : parts[0] || 'home';
+  $$('#nav a').forEach((a) => a.classList.toggle('on', a.dataset.nav === navKey));
+  view.innerHTML = '<div class="empty">加载中…</div>';
+  try {
+    if (parts[0] === 'p') await pagePlayer(view, Number(parts[1]), parts[2] || 'report', seq);
+    else if (parts[0] === 'questions') await pageQuestions(view, seq);
+    else if (parts[0] === 'messages') await pageMessages(view, null, seq);
+    else if (parts[0] === 'leaderboard') await pageLeaderboard(view, seq);
+    else if (parts[0] === 'settings') await pageSettings(view, seq);
+    else await pageHome(view, seq);
+  } catch (e) {
+    if (seq === state.renderSeq) view.innerHTML = '<div class="empty">出错了：' + esc(e.message) + '</div>';
+  }
+  window.scrollTo(0, 0);
+}
+const stale = (seq) => seq !== state.renderSeq;
+
+// ------------------------------------------------------------ 总览
+async function pageHome(view, seq) {
+  const d = await api('/api/admin/dashboard');
+  if (stale(seq)) return;
+  const cards = d.players.map((p) => {
+    const tags = [];
+    if (p.rewardsToGrant) tags.push('<span class="badge warn">' + p.rewardsToGrant + ' 个奖励待兑现</span>');
+    if (p.activeTasks) tags.push('<span class="badge acc">' + p.activeTasks + ' 个任务进行中</span>');
+    if (p.hidden) tags.push('<span class="badge">不上排行榜</span>');
+    const play = p.playtimeEnabled ? fmtMin(p.todaySeconds) + ' / ' + fmtMin(p.limitToday) : fmtMin(p.todaySeconds);
+    return '<div class="card kid" data-id="' + p.id + '" tabindex="0">' +
+      '<div class="row"><span class="name">' + esc(p.name) + '</span><span class="badge">' + esc(GRADE[p.grade] || '') + '</span><span class="badge acc">' + esc(rankLabel(p.rank || 0)) + '</span><span class="sp"></span>' +
+      (p.currentStreak >= 3 ? '<span class="badge good">连对 ' + p.currentStreak + '</span>' : '') + '</div>' +
+      '<div class="stats">' +
+      '<div class="stat"><div class="v">' + p.stars + '</div><div class="k">星星</div></div>' +
+      '<div class="stat"><div class="v">' + p.cleared + '</div><div class="k">已通关</div></div>' +
+      '<div class="stat"><div class="v">' + p.wins + '</div><div class="k">胜利</div></div>' +
+      '<div class="stat"><div class="v">' + p.weekAnswered + '</div><div class="k">本周答题</div></div>' +
+      '<div class="stat"><div class="v">' + pctTxt(p.weekAccuracyAny) + '</div><div class="k">本周正确率</div></div>' +
+      '<div class="stat"><div class="v">' + p.todayAnswered + '</div><div class="k">今日答题</div></div>' +
+      '</div>' +
+      '<div class="small muted" style="margin-top:10px">今日游戏 ' + esc(play) + (p.playtimeEnabled ? '' : '（未限制）') + ' · 最近答题 ' + fmtTime(p.lastAnswerAt) + '</div>' +
+      (tags.length ? '<div class="row" style="margin-top:8px">' + tags.join('') + '</div>' : '') +
+      '</div>';
+  });
+  view.innerHTML = '<h1>孩子们</h1>' +
+    (d.catalogLoaded ? '' : '<div class="callout small" style="margin-bottom:12px">还没有收到游戏上传的专题目录，报告里暂时显示专题编号。孩子打开一次游戏后就会自动补上。</div>') +
+    (cards.length ? '<div class="grid">' + cards.join('') + '</div>' : '<div class="card empty">还没有孩子注册。让孩子在游戏首页注册账号后，这里就会出现。</div>') +
+    '<p class="small muted" style="margin-top:18px">服务器时区：' + esc(d.tz) + '（UTC' + (d.utcOffsetMinutes >= 0 ? '+' : '') + d.utcOffsetMinutes / 60 + '），今天是 ' + esc(d.today) + '。' + (d.tzEnv ? '' : ' 未设置 TZ 环境变量，日界线可能不是北京时间。') + '</p>';
+  $$('.kid', view).forEach((c) => {
+    const go = () => (location.hash = '#/p/' + c.dataset.id + '/report');
+    c.addEventListener('click', go);
+    c.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  });
+}
+
+// ------------------------------------------------------------ 单个孩子
+const PTABS = [['report', '学习报告'], ['wrong', '错题'], ['tasks', '任务与奖励'], ['playtime', '游戏时间'], ['messages', '留言'], ['settings', '难度设置'], ['account', '账号']];
+
+async function pagePlayer(view, id, tab, seq) {
+  let p = state.players.find((x) => x.id === id);
+  if (!p) { await refreshPlayers(); p = state.players.find((x) => x.id === id); }
+  if (!p) { view.innerHTML = '<div class="empty">没有这个孩子。<a href="#/">回到总览</a></div>'; return; }
+  view.innerHTML = '<div class="row" style="margin-bottom:6px"><a href="#/" class="small">‹ 总览</a></div>' +
+    '<h1>' + esc(p.name) + ' <span class="badge">' + esc(GRADE[p.grade] || '') + '</span></h1>' +
+    '<div class="tabs">' + PTABS.map(([k, n]) => '<a href="#/p/' + id + '/' + k + '"' + (k === tab ? ' class="on"' : '') + '>' + n + '</a>').join('') + '</div><div id="pv"></div>';
+  const pv = $('#pv');
+  pv.onclick = null;
+  const fn = { report: tabReport, wrong: tabWrong, tasks: tabTasks, playtime: tabPlaytime, messages: (el, pl, s) => pageMessages(el, pl, s), settings: tabSettings, account: tabAccount }[tab] || tabReport;
+  pv.innerHTML = '<div class="empty">加载中…</div>';
+  await fn(pv, p, seq);
+}
+
+// ---- 学习报告
+async function tabReport(el, p, seq) {
+  const r = await api('/api/admin/players/' + p.id + '/report');
+  if (stale(seq)) return;
+  if (!r.totals.answered) { el.innerHTML = '<div class="card empty">' + esc(p.name) + ' 还没有答题记录。玩几局之后再来看吧。</div>'; return; }
+  const weakIds = new Set(r.weakTopics.map((t) => t.topicId));
+  const tiles = [
+    [r.totals.answered, '总答题'], [pctTxt(r.totals.accuracy), '总正确率'], [r.last7.answered, '近 7 天答题'], [pctTxt(r.last7.accuracy), '近 7 天正确率'],
+    [r.streak.current, '当前连对'], [r.streak.best, '最佳连对'], [r.totals.daysActive, '活跃天数'], [fmtMs(r.totals.avgMs), '平均用时'],
+  ];
+  el.innerHTML =
+    '<div class="tiles">' + tiles.map((t) => '<div class="tile"><div class="v">' + esc(t[0]) + '</div><div class="k">' + t[1] + '</div></div>').join('') + '</div>' +
+    (r.weakTopics.length
+      ? '<div class="callout" style="margin-top:14px"><b>需要加强：</b>' + r.weakTopics.map((t) => esc(t.name) + '（' + t.accuracy + '%，' + t.answered + ' 题）').join('、') + '<div class="small muted">至少答过 ' + r.weakMinSample + ' 题、正确率低于 80% 的专题。可以在「任务与奖励」里给它布置一个专项任务。</div></div>'
+      : '<p class="small muted" style="margin-top:12px">目前没有明显薄弱的专题（至少 ' + r.weakMinSample + ' 题、正确率低于 80% 才会列出）。</p>') +
+    '<h2>最近 30 天</h2><div class="card"><div class="legend"><span><i style="background:var(--accent)"></i>每天答题数</span><span><i style="background:var(--good)"></i>正确率</span></div><div class="chart" id="chAct"></div></div>' +
+    '<h2>各专题正确率</h2><div class="card"><div class="legend"><span><i style="background:var(--accent)"></i>正确率</span><span><i style="background:var(--bad)"></i>薄弱专题</span><span>虚线 = 60%</span></div><div class="chart" id="chTop"></div></div>' +
+    '<h2>专题明细</h2><div class="tbl wide"><table><tr><th>专题</th><th>年级</th><th class="n">答题</th><th class="n">正确率</th><th class="n">近 7 天</th><th class="n">平均用时</th><th>最近</th></tr>' +
+    r.topics.map((t) => '<tr><td>' + esc(t.name) + (weakIds.has(t.topicId) ? ' <span class="badge bad">薄弱</span>' : '') + '</td><td>' + esc(GRADE[t.grade] || t.grade) + '</td><td class="n">' + t.answered + '</td><td class="n">' + accBadge(t.accuracy) + '</td><td class="n">' + (t.last7.answered ? t.last7.answered + ' 题 · ' + pctTxt(t.last7.accuracy) : '—') + '</td><td class="n">' + fmtMs(t.avgMs) + '</td><td class="small">' + fmtTime(t.lastAt) + '</td></tr>').join('') +
+    '</table></div>' +
+    '<div class="grid" style="margin-top:14px">' +
+    '<div><h3>按难度</h3><div class="tbl"><table><tr><th>难度</th><th class="n">答题</th><th class="n">正确率</th></tr>' + r.byDifficulty.map((d) => '<tr><td>' + DIFF[d.difficulty] + '</td><td class="n">' + d.answered + '</td><td class="n">' + accBadge(d.accuracy) + '</td></tr>').join('') + '</table></div></div>' +
+    '<div><h3>按场景</h3><div class="tbl"><table><tr><th>场景</th><th class="n">答题</th><th class="n">正确率</th></tr>' + r.byContext.map((d) => '<tr><td>' + esc(CTX[d.context] || d.context) + '</td><td class="n">' + d.answered + '</td><td class="n">' + accBadge(d.accuracy) + '</td></tr>').join('') + '</table></div></div>' +
+    '</div>';
+  const draw = () => {
+    activityChart($('#chAct'), r.daily);
+    topicBars($('#chTop'), r.topics.map((t) => ({ name: t.name, accuracy: t.accuracy, answered: t.answered, weak: weakIds.has(t.topicId) })));
+  };
+  draw();
+  state.redraw = draw;
+}
+
+// ---- 错题
+async function tabWrong(el, p, seq) {
+  const { wrong } = await api('/api/admin/players/' + p.id + '/wrong');
+  if (stale(seq)) return;
+  if (!wrong.length) { el.innerHTML = '<div class="card empty">错题本是空的。</div>'; return; }
+  el.innerHTML = '<p class="muted small">共 ' + wrong.length + ' 道（游戏存档里的错题本，孩子订正后会消失）。</p><div class="list">' + wrong.map((w) => {
+    const q = w.q || {};
+    const opts = (Array.isArray(q.options) ? q.options : []).map((o, i) => '<div class="opt ' + (i === q.answer ? 'good' : i === w.picked ? 'bad' : '') + '">' + 'ABCD'[i] + '. ' + esc(o) + (i === q.answer ? '　✓ 正确答案' : i === w.picked ? '　✗ 孩子的答案' : '') + '</div>').join('');
+    const fig = safeSvg(q.figure);
+    return '<div class="wrong"><div class="small muted">' + fmtTime(w.time) + ' · 关卡 ' + esc(levelName(w.levelId)) + (q.topicId ? ' · ' + esc(topicName(q.topicId)) : '') + '</div><div class="q">' + esc(q.text) + '</div>' + (fig ? '<div class="fig">' + fig + '</div>' : '') + opts + (q.explain ? '<div class="small muted" style="margin-top:6px">解析：' + esc(q.explain) + '</div>' : '') + '</div>';
+  }).join('') + '</div>';
+}
+
+// ---- 任务与奖励
+function progressHtml(t, v) {
+  const pr = v.progress;
+  const ratio = pr.target ? Math.min(1, pr.current / pr.target) : 0;
+  let txt = pr.current + ' / ' + pr.target;
+  if (t.kind === 'accuracy') txt = '已答 ' + pr.current + ' / ' + pr.target + ' 题 · 正确率 ' + pctTxt(pr.accuracy) + '（目标 ' + pr.percent + '%）';
+  else if (t.kind === 'clear_level') txt = pr.current ? '已通关' : '未通关';
+  return '<div class="row"><div class="bar' + (v.status === 'done' ? ' done' : '') + '" style="flex:1"><i style="width:' + Math.round(ratio * 100) + '%"></i></div><span class="small muted">' + esc(txt) + '</span></div>';
+}
+
+function catalogOptions(list, sel, empty) {
+  return (empty ? '<option value="">' + esc(empty) + '</option>' : '') + list.map((x) => '<option value="' + esc(x.id) + '"' + (x.id === sel ? ' selected' : '') + '>' + esc((GRADE[x.grade] || '') + ' · ' + x.name) + '</option>').join('');
+}
+
+function taskParamFields(kind, prm) {
+  prm = prm || {};
+  const cat = state.catalog;
+  const topicField = (optional) => cat
+    ? '<label class="f">专题<select name="topicId">' + catalogOptions(cat.topics, prm.topicId, optional ? '不限专题' : '') + '</select></label>'
+    : '<label class="f">专题编号<input type="text" name="topicId" value="' + esc(prm.topicId || '') + '" placeholder="如 g3-hecha"></label>';
+  const count = (label, v) => '<label class="f">' + label + '<input type="number" name="count" min="1" value="' + esc(prm.count || v) + '"></label>';
+  switch (kind) {
+    case 'clear_level':
+      return cat ? '<label class="f">关卡<select name="levelId">' + cat.levels.map((l) => '<option value="' + esc(l.id) + '"' + (l.id === prm.levelId ? ' selected' : '') + '>' + esc(l.id + ' ' + l.name + (l.boss ? '（终局）' : '')) + '</option>').join('') + '</select></label>'
+        : '<label class="f">关卡编号<input type="text" name="levelId" value="' + esc(prm.levelId || '') + '" placeholder="如 3-2"></label>';
+    case 'clear_count':
+      return count('通关关卡数（累计）', 5) + '<label class="f">年级<select name="grade"><option value="">不限</option>' + [3, 4, 5, 6].map((g) => '<option value="' + g + '"' + (prm.grade === g ? ' selected' : '') + '>' + GRADE[g] + '</option>').join('') + '</select></label>';
+    case 'correct_in_topic':
+      return topicField(false) + count('答对题数', 20);
+    case 'correct_total':
+      return count('答对题数', 50);
+    case 'accuracy':
+      return topicField(true) + '<label class="f">目标正确率 %<input type="number" name="percent" min="1" max="100" value="' + esc(prm.percent || 80) + '"></label><label class="f">至少答题数<input type="number" name="minAnswers" min="5" value="' + esc(prm.minAnswers || 20) + '"></label>';
+    case 'streak':
+      return count('连续答对题数', 10);
+  }
+  return '';
+}
+
+function readTaskParams(form, kind) {
+  const g = (n) => { const e = form.elements[n]; return e ? e.value : ''; };
+  const p = {};
+  if (kind === 'clear_level') p.levelId = g('levelId');
+  if (['clear_count', 'correct_in_topic', 'correct_total', 'streak'].includes(kind)) p.count = Number(g('count'));
+  if (kind === 'clear_count' && g('grade')) p.grade = Number(g('grade'));
+  if (kind === 'correct_in_topic' || (kind === 'accuracy' && g('topicId'))) p.topicId = g('topicId');
+  if (kind === 'accuracy') { p.percent = Number(g('percent')); p.minAnswers = Number(g('minAnswers')); }
+  return p;
+}
+
+function taskFormHtml(p, t) {
+  const kind = t ? t.kind : 'correct_in_topic';
+  return '<form class="card" id="taskForm"><h3 style="margin-top:0">' + (t ? '编辑任务' : '布置新任务') + '</h3><div class="form">' +
+    '<label class="f">给谁<select name="target"><option value="me"' + (!t || t.playerId !== null ? ' selected' : '') + '>只给 ' + esc(p.name) + '</option><option value="all"' + (t && t.playerId === null ? ' selected' : '') + '>所有孩子</option></select></label>' +
+    '<label class="f">任务类型<select name="kind">' + Object.keys(KINDS).map((k) => '<option value="' + k + '"' + (k === kind ? ' selected' : '') + '>' + KINDS[k] + '</option>').join('') + '</select></label>' +
+    '<div id="paramFields" style="display:contents">' + taskParamFields(kind, t && t.params) + '</div>' +
+    '<label class="f full">任务名称<input type="text" name="title" maxlength="40" value="' + esc(t ? t.title : '') + '" placeholder="不填则自动生成，如「在『鸡兔同笼』答对 20 题」"></label>' +
+    '<label class="f">现实奖励（可选）<input type="text" name="reward" maxlength="60" value="' + esc(t ? t.reward : '') + '" placeholder="如：周末去游乐园"></label>' +
+    '<label class="f">截止日期（可选）<input type="date" name="dueDate" value="' + esc(t && t.dueDate ? t.dueDate : '') + '"></label>' +
+    '<label class="f">游戏内奖励：每回合额外金币<input type="number" name="bonusCredits" min="0" max="2000" step="50" value="' + esc(t ? t.bonusCredits : 0) + '"><span class="hint">0 表示没有；最多 2000</span></label>' +
+    '<label class="f full">备注（可选）<textarea name="note" maxlength="200" placeholder="给孩子的话">' + esc(t ? t.note : '') + '</textarea></label>' +
+    '</div><p class="small muted">「答对 / 正确率 / 连对」只统计任务布置之后的答题；「通关」按存档里的星级判断（已通关的关卡也算）。</p>' +
+    '<div class="row"><button class="btn pri" type="submit">' + (t ? '保存修改' : '布置任务') + '</button>' + (t ? '<button class="btn" type="button" id="cancelEdit">取消</button>' : '') + '</div></form>';
+}
+
+async function tabTasks(el, p, seq, editId) {
+  const { tasks } = await api('/api/admin/tasks?playerId=' + p.id);
+  if (stale(seq)) return;
+  const editing = editId ? tasks.find((t) => t.id === editId) : null;
+  const rows = tasks.map((t) => {
+    const v = t.players.find((x) => x.playerId === p.id) || t.players[0];
+    if (!v) return '';
+    const st = STATUS[t.archived ? 'archived' : v.status] || ['', ''];
+    const others = t.playerId === null && t.players.length > 1 ? '<div class="small muted">全家任务 · ' + t.players.map((x) => esc(x.name) + '：' + (STATUS[x.status] || [''])[0] + (x.rewardGranted ? '（已兑现）' : '')).join('，') + '</div>' : '';
+    const canGrant = v.status === 'done' && !v.rewardGranted;
+    return '<div class="card task"><div class="row"><span class="t">' + esc(t.title) + '</span><span class="badge ' + st[1] + '">' + st[0] + '</span>' +
+      (t.playerId === null ? '<span class="badge">所有孩子</span>' : '') + '<span class="sp"></span><span class="small muted">' + esc(KINDS[t.kind]) + '</span></div>' +
+      (t.title !== t.description ? '<div class="small muted">' + esc(t.description) + '</div>' : '') +
+      progressHtml(t, v) +
+      '<div class="row small">' +
+      (t.reward ? '<span>奖励：' + esc(t.reward) + (v.rewardGranted ? ' <span class="badge good">已兑现 ' + fmtTime(v.grantedAt) + '</span>' : v.status === 'done' ? ' <span class="badge warn">待兑现</span>' : '') + '</span>' : '') +
+      (t.bonusCredits ? '<span class="muted">每回合 +' + t.bonusCredits + ' 金币</span>' : '') +
+      (t.dueDate ? '<span class="muted">截止 ' + esc(t.dueDate) + '</span>' : '') +
+      (v.completedAt ? '<span class="muted">完成于 ' + fmtTime(v.completedAt) + '</span>' : '') +
+      '<span class="muted">布置于 ' + fmtDay(t.createdAt) + '</span></div>' +
+      (t.note ? '<div class="small msg">' + esc(t.note) + '</div>' : '') + others +
+      '<div class="row">' +
+      (canGrant ? '<button class="btn sm pri" data-grant="' + t.id + '">标记奖励已兑现</button>' : '') +
+      (v.rewardGranted ? '<button class="btn sm" data-ungrant="' + t.id + '">撤销兑现</button>' : '') +
+      '<button class="btn sm" data-edit="' + t.id + '">编辑</button>' +
+      '<button class="btn sm" data-archive="' + t.id + '" data-v="' + (t.archived ? '0' : '1') + '">' + (t.archived ? '取消归档' : '归档') + '</button>' +
+      '<button class="btn sm danger" data-del="' + t.id + '">删除</button></div></div>';
+  });
+  el.innerHTML = taskFormHtml(p, editing) + '<h2>任务列表</h2>' + (tasks.length ? '<div class="list">' + rows.join('') + '</div>' : '<div class="card empty">还没有任务。在上面布置一个吧——孩子会在游戏里看到进度，完成时有庆祝动画。</div>');
+  const form = $('#taskForm');
+  form.elements.kind.addEventListener('change', () => { $('#paramFields').innerHTML = taskParamFields(form.elements.kind.value, null); });
+  on(form, 'submit', async () => {
+    const kind = form.elements.kind.value;
+    const body = {
+      playerId: form.elements.target.value === 'all' ? null : p.id,
+      kind, params: readTaskParams(form, kind), title: form.elements.title.value, note: form.elements.note.value,
+      reward: form.elements.reward.value, dueDate: form.elements.dueDate.value || null, bonusCredits: Number(form.elements.bonusCredits.value || 0),
+    };
+    if (editing) await api('/api/admin/tasks/' + editing.id, 'PUT', body);
+    else await api('/api/admin/tasks', 'POST', body);
+    toast(editing ? '已保存' : '任务已布置');
+    await tabTasks(el, p, state.renderSeq);
+  });
+  on($('#cancelEdit'), 'click', () => tabTasks(el, p, state.renderSeq));
+  $$('[data-edit]', el).forEach((b) => on(b, 'click', async () => { await tabTasks(el, p, state.renderSeq, Number(b.dataset.edit)); window.scrollTo(0, 0); }));
+  $$('[data-grant]', el).forEach((b) => on(b, 'click', async () => { await api('/api/admin/tasks/' + b.dataset.grant + '/grant', 'POST', { playerId: p.id, granted: true }); toast('已标记为兑现'); await tabTasks(el, p, state.renderSeq); }));
+  $$('[data-ungrant]', el).forEach((b) => on(b, 'click', async () => { await api('/api/admin/tasks/' + b.dataset.ungrant + '/grant', 'POST', { playerId: p.id, granted: false }); await tabTasks(el, p, state.renderSeq); }));
+  $$('[data-archive]', el).forEach((b) => on(b, 'click', async () => { await api('/api/admin/tasks/' + b.dataset.archive + '/archive', 'POST', { archived: b.dataset.v === '1' }); await tabTasks(el, p, state.renderSeq); }));
+  $$('[data-del]', el).forEach((b) => on(b, 'click', async () => {
+    if (!confirm('确定删除这个任务吗？所有孩子的进度和兑现记录都会一起删除。')) return;
+    await api('/api/admin/tasks/' + b.dataset.del, 'DELETE');
+    toast('已删除');
+    await tabTasks(el, p, state.renderSeq);
+  }));
+}
+
+// ---- 游戏时间
+function windowRows(name, list) {
+  return '<div class="windows" data-win="' + name + '">' + list.map((w) => '<div class="w"><input type="time" value="' + esc(w.start) + '"> 到 <input type="time" value="' + esc(w.end === '24:00' ? '23:59' : w.end) + '"><button type="button" class="btn sm danger" data-rmwin>删除</button></div>').join('') +
+    '<button type="button" class="btn sm" data-addwin="' + name + '">+ 添加时间段</button></div>';
+}
+function readWindows(el, name) {
+  return $$('[data-win="' + name + '"] .w', el).map((w) => { const t = $$('input', w); return { start: t[0].value, end: t[1].value === '23:59' ? '24:00' : t[1].value }; }).filter((w) => w.start && w.end);
+}
+
+async function tabPlaytime(el, p, seq) {
+  const d = await api('/api/admin/players/' + p.id + '/playtime');
+  if (stale(seq)) return;
+  const s = d.settings, st = d.status;
+  const statusLine = !s.enabled ? '<span class="badge">未开启限制</span> 只记录时长，不限制。'
+    : st.allowedNow ? '<span class="badge good">现在可以玩</span> 今天还剩 ' + fmtMin(st.remaining) + (st.windowEndsAt ? '，本时间段到 ' + fmtTime(st.windowEndsAt).split(' ')[1] + ' 结束' : '')
+    : '<span class="badge bad">现在不能开新局</span> ' + esc(st.message);
+  el.innerHTML =
+    '<div class="tiles"><div class="tile"><div class="v">' + fmtMin(st.usedToday) + '</div><div class="k">今天已玩</div></div>' +
+    '<div class="tile"><div class="v">' + (s.enabled ? fmtMin(st.limitToday) : '不限') + '</div><div class="k">今天上限' + (st.bonusMinutesToday ? '（含加时 ' + st.bonusMinutesToday + ' 分）' : '') + '</div></div>' +
+    '<div class="tile"><div class="v">' + (s.enabled && st.remaining != null ? fmtMin(st.remaining) : '—') + '</div><div class="k">今天剩余</div></div></div>' +
+    '<p>' + statusLine + '</p>' +
+    '<div class="row"><span class="small muted">今天临时加时：</span><button class="btn sm" data-bonus="15">+15 分钟</button><button class="btn sm" data-bonus="30">+30 分钟</button><button class="btn sm" data-bonus="-15">−15 分钟</button></div>' +
+    '<h2>最近 14 天（分钟）</h2><div class="card"><div class="chart" id="chPlay"></div></div>' +
+    '<h2>规则设置</h2><form class="card" id="ptForm">' +
+    '<label class="chk" style="margin-bottom:12px"><input type="checkbox" name="enabled"' + (s.enabled ? ' checked' : '') + '> 开启游戏时间管理（关闭时只记录，不限制）</label>' +
+    '<div class="form">' +
+    '<label class="f">工作日每天最多（分钟）<input type="number" name="weekdayMinutes" min="0" max="720" value="' + (s.weekdayMinutes == null ? '' : s.weekdayMinutes) + '" placeholder="留空 = 不限时长"></label>' +
+    '<label class="f">周末每天最多（分钟）<input type="number" name="weekendMinutes" min="0" max="720" value="' + (s.weekendMinutes == null ? '' : s.weekendMinutes) + '" placeholder="留空 = 不限时长"></label>' +
+    '<div class="f full"><span class="small muted">工作日可玩时间段（不添加 = 全天都可以）</span>' + windowRows('weekday', s.weekdayWindows) + '</div>' +
+    '<div class="f full"><span class="small muted">周末可玩时间段（不添加 = 全天都可以）</span>' + windowRows('weekend', s.weekendWindows) + '</div>' +
+    '</div><p class="small muted">游戏在对局进行时每 30 秒上报一次时长。时间到了不会打断正在进行的对局，但不能再开新局。</p>' +
+    '<button class="btn pri" type="submit">保存</button></form>';
+  const draw = () => playChart($('#chPlay'), d.days);
+  draw();
+  state.redraw = draw;
+  el.onclick = (e) => {
+    const add = e.target.closest('[data-addwin]');
+    if (add) {
+      const box = add.parentElement;
+      if ($$('.w', box).length >= 4) { toast('最多 4 个时间段', true); return; }
+      const div = document.createElement('div');
+      div.className = 'w';
+      div.innerHTML = '<input type="time" value="16:00"> 到 <input type="time" value="20:00"><button type="button" class="btn sm danger" data-rmwin>删除</button>';
+      box.insertBefore(div, add);
+    }
+    const rm = e.target.closest('[data-rmwin]');
+    if (rm) rm.parentElement.remove();
+  };
+  $$('[data-bonus]', el).forEach((b) => on(b, 'click', async () => {
+    const r = await api('/api/admin/players/' + p.id + '/playtime/bonus', 'POST', { minutes: Number(b.dataset.bonus) });
+    toast('今天加时共 ' + r.bonusMinutesToday + ' 分钟');
+    await tabPlaytime(el, p, state.renderSeq);
+  }));
+  const f = $('#ptForm');
+  on(f, 'submit', async () => {
+    await api('/api/admin/players/' + p.id + '/playtime', 'PUT', {
+      enabled: f.elements.enabled.checked,
+      weekdayMinutes: numOrNull(f.elements.weekdayMinutes.value),
+      weekendMinutes: numOrNull(f.elements.weekendMinutes.value),
+      weekdayWindows: readWindows(f, 'weekday'),
+      weekendWindows: readWindows(f, 'weekend'),
+    });
+    toast('已保存');
+    await tabPlaytime(el, p, state.renderSeq);
+  });
+}
+
+// ---- 留言（单个孩子 / 全体）
+/** 留言已读情况：给某个孩子的 → 已读 / 未读；给所有孩子的 → 列出读过的名字 */
+function readBadge(m) {
+  const by = m.readBy || [];
+  if (!m.forAll) return by.length ? '<span class="badge good" title="' + esc(fmtTime(by[0].readAt)) + '">已读</span>' : '<span class="badge">未读</span>';
+  if (!by.length) return '<span class="badge">还没人读</span>';
+  return '<span class="badge good">' + esc(by.map((x) => x.name).join('、')) + ' 已读</span>';
+}
+
+async function pageMessages(el, p, seq) {
+  const { messages } = await api('/api/admin/messages');
+  if (stale(seq)) return;
+  const list = p ? messages.filter((m) => m.forAll || m.playerId === p.id) : messages;
+  const target = p
+    ? '<input type="hidden" name="target" value="' + p.id + '">'
+    : '<label class="f">发给<select name="target"><option value="">所有孩子</option>' + state.players.map((x) => '<option value="' + x.id + '">' + esc(x.name) + '</option>').join('') + '</select></label>';
+  el.innerHTML = (p ? '' : '<h1>留言</h1>') +
+    '<form class="card" id="msgForm"><div class="form">' +
+    '<label class="f full">留言内容（最多 200 字，孩子打开游戏时会醒目地看到，点「知道了」后就不再显示）<textarea name="text" maxlength="200" placeholder="比如：今天作业写得很认真，奖励你多玩 15 分钟！"></textarea></label>' +
+    target +
+    '<label class="f">有效期<select name="hours"><option value="">一直有效（直到删除）</option><option value="24">1 天</option><option value="72">3 天</option><option value="168">1 周</option></select></label>' +
+    (p ? '<label class="f">发给<select name="scope"><option value="me">只给 ' + esc(p.name) + '</option><option value="all">所有孩子</option></select></label>' : '') +
+    '</div><div class="row" style="margin-top:12px"><button class="btn pri" type="submit">发送</button><span class="small muted" id="cnt">0 / 200</span></div></form>' +
+    '<h2>' + (p ? esc(p.name) + ' 能看到的留言' : '全部留言') + '</h2>' +
+    (list.length ? '<div class="list">' + list.map((m) => '<div class="card"><div class="row small muted"><span>' + fmtTime(m.createdAt) + '</span><span class="badge">' + (m.forAll ? '所有孩子' : '给 ' + esc(m.playerName)) + '</span>' +
+      (m.expired ? '<span class="badge bad">已过期</span>' : m.expiresAt ? '<span>到 ' + fmtTime(m.expiresAt) + '</span>' : '') + readBadge(m) + '<span class="sp"></span><button class="btn sm danger" data-delmsg="' + m.id + '">删除</button></div><div class="msg" style="margin-top:6px">' + esc(m.text) + '</div></div>').join('') + '</div>'
+      : '<div class="card empty">还没有留言。</div>');
+  const f = $('#msgForm');
+  f.elements.text.addEventListener('input', () => ($('#cnt').textContent = Array.from(f.elements.text.value).length + ' / 200'));
+  on(f, 'submit', async () => {
+    let playerId = f.elements.target.value ? Number(f.elements.target.value) : null;
+    if (p && f.elements.scope.value === 'all') playerId = null;
+    await api('/api/admin/messages', 'POST', { text: f.elements.text.value, playerId, expiresInHours: numOrNull(f.elements.hours.value) });
+    toast('已发送');
+    await pageMessages(el, p, state.renderSeq);
+  });
+  $$('[data-delmsg]', el).forEach((b) => on(b, 'click', async () => {
+    if (!confirm('确定删除这条留言吗？')) return;
+    await api('/api/admin/messages/' + b.dataset.delmsg, 'DELETE');
+    await pageMessages(el, p, state.renderSeq);
+  }));
+}
+
+// ---- 难度设置 + 出题频率 + 比赛长度
+function estimate(v) {
+  const n = v.roundsToWin || 5, nb = v.bossRoundsToWin || 7;
+  const line = (label, n) => {
+    const lo = n, hi = 2 * n - 1;
+    const must = v.gateRequired ? v.gateCount : 0;
+    return label + '：先赢 ' + n + ' 回合，一局 ' + lo + '–' + hi + ' 回合，约 ' + Math.round(lo * 1.5) + '–' + Math.round(hi * 2.5) + ' 分钟；' +
+      (must ? '每局必答约 <b>' + must * lo + '–' + must * hi + '</b> 道门槛题' : '没有必答的门槛题') +
+      (v.bonusCount ? '，另有最多 ' + v.bonusCount * hi + ' 道可选加分题' : '') + '。';
+  };
+  return line('普通关卡', n) + '<br>' + line('终局关卡', nb) + '<br><span class="small muted">安放 / 拆除 / 复活时还会另外出题，次数取决于对局情况。</span>';
+}
+
+async function tabSettings(el, p, seq) {
+  const d = await api('/api/admin/players/' + p.id + '/settings');
+  if (stale(seq)) return;
+  const s = d.settings;
+  const n = (name, label, min, max, step, hint) => '<label class="f">' + label + '<input type="number" name="' + name + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + esc(s[name]) + '"><span class="hint">' + hint + '（' + min + '–' + max + '，默认 ' + d.defaults[name] + '）</span></label>';
+  const rounds = (name, label, def) => '<label class="f">' + label + '<select name="' + name + '"><option value="">游戏默认（先赢 ' + def + ' 回合）</option>' +
+    Array.from({ length: 11 }, (_, i) => i + 3).map((k) => '<option value="' + k + '"' + (s[name] === k ? ' selected' : '') + '>先赢 ' + k + ' 回合</option>').join('') + '</select></label>';
+  el.innerHTML = '<form id="setForm" class="list">' +
+    '<div class="card"><h3 style="margin-top:0">难度设置</h3><div class="form">' +
+    '<label class="f">年级<select name="grade">' + [3, 4, 5, 6].map((g) => '<option value="' + g + '"' + (s.grade === g ? ' selected' : '') + '>' + GRADE[g] + '</option>').join('') + '</select><span class="hint">决定默认出题范围和推荐关卡</span></label>' +
+    n('passAccuracy', '过关正确率 %', 40, 100, 5, '本局答题正确率达到多少才算过关') +
+    n('botStrength', '对手强度', 0.5, 1.5, 0.05, '1 = 正常；调小让电脑对手更弱') +
+    n('reviveSeconds', '复活答题时间（秒）', 20, 180, 5, '倒下后答题复活的限时') +
+    '<label class="chk full"><input type="checkbox" name="gateRequired"' + (s.gateRequired ? ' checked' : '') + '> 每回合开始前必须先答对门槛题才能购买装备</label>' +
+    '<label class="chk full"><input type="checkbox" name="hideFromLeaderboard"' + (s.hideFromLeaderboard ? ' checked' : '') + '> 不在家庭排行榜上显示这个孩子</label>' +
+    '</div></div>' +
+    '<div class="card"><h3 style="margin-top:0">出题频率</h3><div class="form">' +
+    n('gateCount', '门槛题数量', 1, 5, 1, '每回合开始前要答对几道（仅在开启门槛题时有效）') +
+    n('bonusCount', '加分题数量', 0, 4, 1, '每回合可以选做的加分题，答对得金币') +
+    n('plantQuestions', '安放要答对几题', 1, 3, 1, '安放装置时需要连续答对的题数') +
+    n('defuseQuestions', '拆除要答对几题', 1, 3, 1, '拆除装置时需要连续答对的题数') +
+    n('reviewRate', '错题重出概率 %', 0, 50, 5, '门槛题有多大概率从错题本里挑以前做错的题') +
+    n('customRate', '家长出题概率 %', 0, 100, 10, '有待做的自定义题时，门槛题用它的概率') +
+    '</div></div>' +
+    '<div class="card"><h3 style="margin-top:0">比赛长度</h3><p class="small muted" style="margin-top:0">一局要先赢几回合；回合越多一局越长，答题也越多。每回合约 1.5–2.5 分钟，先赢 N 回合的一局要打 N 到 2N−1 回合。</p><div class="form">' +
+    rounds('roundsToWin', '普通关卡', 5) + rounds('bossRoundsToWin', '终局关卡', 7) +
+    '</div></div>' +
+    '<div class="est" id="est"></div>' +
+    '<div class="row"><button class="btn pri" type="submit">保存设置</button><button class="btn" type="button" id="resetDefaults">恢复默认值</button></div></form>';
+  const f = $('#setForm');
+  const read = () => ({
+    grade: Number(f.elements.grade.value),
+    passAccuracy: Number(f.elements.passAccuracy.value), botStrength: Number(f.elements.botStrength.value), reviveSeconds: Number(f.elements.reviveSeconds.value),
+    gateRequired: f.elements.gateRequired.checked, hideFromLeaderboard: f.elements.hideFromLeaderboard.checked,
+    gateCount: Number(f.elements.gateCount.value), bonusCount: Number(f.elements.bonusCount.value), plantQuestions: Number(f.elements.plantQuestions.value),
+    defuseQuestions: Number(f.elements.defuseQuestions.value), reviewRate: Number(f.elements.reviewRate.value), customRate: Number(f.elements.customRate.value),
+    roundsToWin: numOrNull(f.elements.roundsToWin.value), bossRoundsToWin: numOrNull(f.elements.bossRoundsToWin.value),
+  });
+  const upd = () => { const v = read(); $('#est').innerHTML = estimate({ ...v, gateCount: Math.min(5, Math.max(1, v.gateCount || 1)), bonusCount: Math.min(4, Math.max(0, v.bonusCount || 0)) }); };
+  f.addEventListener('input', upd);
+  f.addEventListener('change', upd);
+  upd();
+  on(f, 'submit', async () => {
+    for (const k of ['passAccuracy', 'botStrength', 'reviveSeconds', 'gateCount', 'bonusCount', 'plantQuestions', 'defuseQuestions', 'reviewRate', 'customRate'])
+      if (f.elements[k].value === '') throw new Error('请把每一项都填上数字');
+    await api('/api/admin/players/' + p.id + '/settings', 'PUT', read());
+    await refreshPlayers();
+    toast('已保存，孩子下次开局时生效');
+    await tabSettings(el, p, state.renderSeq);
+  });
+  on($('#resetDefaults'), 'click', async () => {
+    if (!confirm('把难度、出题频率和比赛长度都恢复成默认值吗？（年级和排行榜开关不变）')) return;
+    const { hideFromLeaderboard, ...defs } = d.defaults;
+    await api('/api/admin/players/' + p.id + '/settings', 'PUT', defs);
+    toast('已恢复默认');
+    await tabSettings(el, p, state.renderSeq);
+  });
+}
+
+// ---- 账号
+async function tabAccount(el, p) {
+  el.innerHTML = '<div class="card"><h3 style="margin-top:0">重置密码</h3><p class="small muted">孩子忘了密码时用。重置后孩子在所有设备上都需要用新密码重新登录。</p>' +
+    '<form id="pwForm" class="row"><input type="text" name="pw" placeholder="新密码（4 到 32 位）" autocomplete="off" style="max-width:260px"><button class="btn pri" type="submit">重置</button></form></div>' +
+    '<div class="card" style="margin-top:14px;border-color:var(--bad-soft)"><h3 style="margin-top:0;color:var(--bad)">删除账号</h3><p class="small muted">会永久删除 ' + esc(p.name) + ' 的存档、答题记录、任务进度、游戏时间记录和个人设置，无法恢复。</p>' +
+    '<button class="btn danger" id="delBtn" type="button">删除 ' + esc(p.name) + '</button></div>' +
+    '<p class="small muted">注册时间：' + fmtTime(p.createdAt) + ' · 最近保存：' + fmtTime(p.updatedAt) + '</p>';
+  on($('#pwForm'), 'submit', async () => {
+    const v = $('#pwForm').elements.pw.value;
+    await api('/api/admin/players/' + p.id + '/reset-password', 'POST', { newPassword: v });
+    $('#pwForm').elements.pw.value = '';
+    toast('已把「' + p.name + '」的密码重置为新密码');
+  });
+  on($('#delBtn'), 'click', async () => {
+    if (!confirm('确定删除「' + p.name + '」和全部进度吗？此操作无法撤销。')) return;
+    if (prompt('请输入孩子的名字「' + p.name + '」确认删除：') !== p.name) { toast('名字不一致，已取消'); return; }
+    await api('/api/admin/players/' + p.id, 'DELETE');
+    await refreshPlayers();
+    toast('已删除');
+    location.hash = '#/';
+  });
+}
+
+// ------------------------------------------------------------ 设置（修改家长密码）
+async function pageSettings(view, seq) {
+  const info = await api('/api/admin/password');
+  if (seq !== state.renderSeq) return;
+  const src = info.source === 'custom'
+    ? '当前密码是在本页设置的（' + fmtTime(info.changedAt) + '）。'
+    : '当前用的是安装时设定的初始密码。建议改成只有你知道的密码。';
+  view.innerHTML = '<h2>设置</h2>' +
+    '<div class="card" style="max-width:560px"><h3 style="margin-top:0">修改家长管理密码</h3>' +
+    '<p class="small muted">' + esc(src) + '改完后，其他已经打开的管理页需要用新密码重新登录。</p>' +
+    '<form id="adminPwForm" class="list" autocomplete="off">' +
+    '<label class="f">当前密码<input type="password" name="cur" autocomplete="current-password" required></label>' +
+    '<label class="f">新密码（6 到 64 位，只能用英文字母、数字和符号）<input type="password" name="next" autocomplete="new-password" minlength="6" maxlength="64" required></label>' +
+    '<label class="f">再输一遍新密码<input type="password" name="again" autocomplete="new-password" minlength="6" maxlength="64" required></label>' +
+    '<label class="chk small"><input type="checkbox" name="show"> 显示密码</label>' +
+    '<div class="row"><button class="btn pri" type="submit">修改密码</button></div>' +
+    '<div id="adminPwErr" class="small" style="color:var(--bad);min-height:1.4em"></div>' +
+    '</form></div>' +
+    '<div class="card" style="max-width:560px;margin-top:14px"><h3 style="margin-top:0">忘了密码怎么办</h3>' +
+    '<p class="small muted">把 NAS 上 <b>docker/suanjing/docker-compose.yml</b> 里的 <b>ADMIN_PASSWORD</b> 改成一个新值，再重新创建容器（在该文件夹执行 docker-compose up -d）。之后用这个新值登录，原来在本页设置的密码会作废。孩子的账号和存档不受影响。</p></div>';
+  const f = $('#adminPwForm');
+  const err = $('#adminPwErr');
+  f.elements.show.addEventListener('change', () => {
+    ['cur', 'next', 'again'].forEach((n) => (f.elements[n].type = f.elements.show.checked ? 'text' : 'password'));
+  });
+  on(f, 'submit', async () => {
+    err.textContent = '';
+    const cur = f.elements.cur.value, next = f.elements.next.value, again = f.elements.again.value;
+    if (next !== again) { err.textContent = '两次输入的新密码不一样'; return; }
+    if (next.length < 6 || next.length > 64) { err.textContent = '新密码需要 6 到 64 位'; return; }
+    if (!/^[\x20-\x7e]+$/.test(next)) { err.textContent = '新密码只能用英文字母、数字和符号（不能用中文），请切换到英文输入法'; return; }
+    if (next.trim() !== next) { err.textContent = '新密码开头和结尾不能是空格'; return; }
+    if (next === cur) { err.textContent = '新密码和当前密码一样'; return; }
+    if (!/^[\x20-\x7e]*$/.test(cur)) { err.textContent = '当前密码不对'; return; }
+    try {
+      await api('/api/admin/password', 'POST', { currentPassword: cur, newPassword: next });
+    } catch (e) { err.textContent = e.message; return; }
+    state.pw = next;
+    try { sessionStorage.setItem('sj-admin-pw', next); } catch (e) { /* 忽略 */ }
+    toast('密码已修改，请记好新密码');
+    route();
+  });
+}
+
+// ------------------------------------------------------------ 自定义题目
+function questionForm(q) {
+  const opts = q ? q.options : ['', '', '', ''];
+  const forAll = !q || q.forAll;
+  const ids = new Set(q && q.playerIds ? q.playerIds : []);
+  return '<form class="card" id="qForm"><h3 style="margin-top:0">' + (q ? '编辑题目 #' + q.id : '出一道新题') + '</h3><div class="form">' +
+    '<label class="f full">题目（最多 300 字）<textarea name="text" maxlength="300" placeholder="例如：妈妈买了 3 袋苹果，每袋 8 个，吃掉 5 个，还剩几个？">' + esc(q ? q.text : '') + '</textarea></label>' +
+    '<div class="f full"><span class="small muted">4 个选项（每个最多 60 字，选中正确答案前面的圆点）</span>' +
+    opts.map((o, i) => '<div class="optrow" style="margin-top:6px"><input type="radio" name="answer" value="' + i + '"' + ((q ? q.answer : 0) === i ? ' checked' : '') + ' aria-label="正确答案 ' + 'ABCD'[i] + '"><b>' + 'ABCD'[i] + '</b><input type="text" name="opt' + i + '" maxlength="60" value="' + esc(o) + '"></div>').join('') + '</div>' +
+    '<label class="f full">解析（可选，最多 400 字）<textarea name="explain" maxlength="400">' + esc(q ? q.explain : '') + '</textarea></label>' +
+    '<label class="f">年级<select name="grade">' + [3, 4, 5, 6].map((g) => '<option value="' + g + '"' + ((q ? q.grade : 3) === g ? ' selected' : '') + '>' + GRADE[g] + '</option>').join('') + '</select></label>' +
+    '<label class="f">分类标签（可选）<input type="text" name="topicLabel" maxlength="20" value="' + esc(q ? q.topicLabel : '') + '" placeholder="如：生活应用题"></label>' +
+    '<label class="f">答对几次后不再出<input type="number" name="requiredCorrect" min="1" max="20" value="' + (q ? q.requiredCorrect : 1) + '"></label>' +
+    '<div class="f full"><span class="small muted">出给谁</span><div class="row"><label class="chk"><input type="radio" name="who" value="all"' + (forAll ? ' checked' : '') + '> 所有孩子</label><label class="chk"><input type="radio" name="who" value="some"' + (forAll ? '' : ' checked') + '> 指定孩子：</label>' +
+    state.players.map((x) => '<label class="chk"><input type="checkbox" name="pid" value="' + x.id + '"' + (ids.has(x.id) ? ' checked' : '') + '> ' + esc(x.name) + '</label>').join('') + '</div></div>' +
+    '<label class="chk"><input type="checkbox" name="active"' + (!q || q.active ? ' checked' : '') + '> 启用</label>' +
+    '</div><div class="row" style="margin-top:12px"><button class="btn pri" type="submit">' + (q ? '保存修改' : '添加题目') + '</button>' + (q ? '<button class="btn" type="button" id="qCancel">取消</button>' : '') + '</div></form>';
+}
+
+async function pageQuestions(view, seq, editId, openStats) {
+  if (!state.players.length) await refreshPlayers();
+  const { questions } = await api('/api/admin/custom-questions');
+  if (stale(seq)) return;
+  const editing = editId ? questions.find((q) => q.id === editId) : null;
+  view.innerHTML = '<h1>自定义题目</h1><p class="muted small">家长出的题会作为门槛题出现在游戏里（按每个孩子的「家长出题概率」），答对指定次数后对这个孩子不再出现。不支持配图。</p>' +
+    questionForm(editing) +
+    '<h2>题目列表（' + questions.length + '）</h2>' +
+    (questions.length ? '<div class="list">' + questions.map((q) => {
+      const pending = q.stats.filter((s) => !s.retired).map((s) => s.name);
+      return '<div class="card"><div class="row"><b>#' + q.id + '</b><span class="badge">' + GRADE[q.grade] + '</span>' + (q.topicLabel ? '<span class="badge acc">' + esc(q.topicLabel) + '</span>' : '') +
+        (q.active ? '' : '<span class="badge">已停用</span>') + '<span class="badge">' + (q.forAll ? '所有孩子' : q.stats.map((s) => esc(s.name)).join('、')) + '</span><span class="sp"></span>' +
+        '<span class="small muted">共答 ' + q.totals.answered + ' 次 · 对 ' + q.totals.correct + ' 次</span></div>' +
+        '<div class="msg" style="margin:8px 0;font-weight:600">' + esc(q.text) + '</div>' +
+        '<div class="small">' + q.options.map((o, i) => '<span style="margin-right:14px;' + (i === q.answer ? 'color:var(--good);font-weight:700' : '') + '">' + 'ABCD'[i] + '. ' + esc(o) + '</span>').join('') + '</div>' +
+        (q.explain ? '<div class="small muted" style="margin-top:4px">解析：' + esc(q.explain) + '</div>' : '') +
+        '<div class="tbl wide" style="margin-top:10px"><table><tr><th>孩子</th><th class="n">答对</th><th class="n">答错</th><th>状态</th><th>最近作答</th></tr>' +
+        q.stats.map((s) => '<tr><td>' + esc(s.name) + '</td><td class="n">' + s.correct + '</td><td class="n">' + s.wrong + '</td><td>' + (s.retired ? '<span class="badge good">已掌握</span>' : '<span class="badge">还需答对 ' + (q.requiredCorrect - s.correct) + ' 次</span>') + '</td><td class="small">' + fmtTime(s.lastAt) + '</td></tr>').join('') +
+        '</table></div>' +
+        '<div class="row" style="margin-top:10px"><button class="btn sm" data-qedit="' + q.id + '">编辑</button><button class="btn sm" data-qstats="' + q.id + '">作答记录</button><button class="btn sm" data-qtoggle="' + q.id + '" data-v="' + (q.active ? '0' : '1') + '">' + (q.active ? '停用' : '启用') + '</button><button class="btn sm danger" data-qdel="' + q.id + '">删除</button>' +
+        (pending.length && q.active ? '<span class="small muted">待做：' + pending.map(esc).join('、') + '</span>' : '') + '</div>' +
+        '<div data-qlog="' + q.id + '"></div></div>';
+    }).join('') + '</div>' : '<div class="card empty">还没有自定义题目。</div>');
+  const f = $('#qForm');
+  on(f, 'submit', async () => {
+    const who = f.querySelector('input[name=who]:checked').value;
+    const pids = $$('input[name=pid]:checked', f).map((x) => Number(x.value));
+    if (who === 'some' && !pids.length) throw new Error('请至少选择一个孩子');
+    const body = {
+      text: f.elements.text.value, options: [0, 1, 2, 3].map((i) => f.elements['opt' + i].value), answer: Number(f.querySelector('input[name=answer]:checked').value),
+      explain: f.elements.explain.value, grade: Number(f.elements.grade.value), topicLabel: f.elements.topicLabel.value,
+      requiredCorrect: Number(f.elements.requiredCorrect.value || 1), active: f.elements.active.checked, playerIds: who === 'all' ? null : pids,
+    };
+    if (editing) await api('/api/admin/custom-questions/' + editing.id, 'PUT', body);
+    else await api('/api/admin/custom-questions', 'POST', body);
+    toast(editing ? '已保存' : '已添加');
+    await pageQuestions(view, state.renderSeq);
+  });
+  on($('#qCancel'), 'click', () => pageQuestions(view, state.renderSeq));
+  $$('[data-qedit]', view).forEach((b) => on(b, 'click', async () => { await pageQuestions(view, state.renderSeq, Number(b.dataset.qedit)); window.scrollTo(0, 0); }));
+  $$('[data-qtoggle]', view).forEach((b) => on(b, 'click', async () => { await api('/api/admin/custom-questions/' + b.dataset.qtoggle, 'PUT', { active: b.dataset.v === '1' }); await pageQuestions(view, state.renderSeq); }));
+  $$('[data-qdel]', view).forEach((b) => on(b, 'click', async () => {
+    if (!confirm('确定删除这道题吗？（孩子们的作答记录仍保留在学习报告里）')) return;
+    await api('/api/admin/custom-questions/' + b.dataset.qdel, 'DELETE');
+    await pageQuestions(view, state.renderSeq);
+  }));
+  $$('[data-qstats]', view).forEach((b) => on(b, 'click', async () => {
+    const box = view.querySelector('[data-qlog="' + b.dataset.qstats + '"]');
+    if (box.innerHTML) { box.innerHTML = ''; return; }
+    const d = await api('/api/admin/custom-questions/' + b.dataset.qstats + '/stats');
+    box.innerHTML = d.attempts.length ? '<div class="tbl" style="margin-top:10px"><table><tr><th>时间</th><th>孩子</th><th>结果</th><th class="n">用时</th></tr>' + d.attempts.map((a) => '<tr><td class="small">' + fmtTime(a.at) + '</td><td>' + esc(a.name) + '</td><td>' + (a.correct ? '<span class="badge good">对</span>' : '<span class="badge bad">错</span>') + '</td><td class="n">' + fmtMs(a.ms) + '</td></tr>').join('') + '</table></div>' : '<p class="small muted">还没有人答过这道题。</p>';
+  }));
+}
+
+// ------------------------------------------------------------ 排行榜
+// 段位名称：与客户端 src/core/rank.ts 的 TIERS 一致（星数 → "黄金 II · 2 星"）
+const RANK_TIERS = [['青铜', 3, 3], ['白银', 3, 3], ['黄金', 3, 4], ['铂金', 3, 4], ['钻石', 3, 5], ['星耀', 3, 5]];
+function rankLabel(pts) {
+  let s = 0;
+  for (const [name, divs, stars] of RANK_TIERS) {
+    if (pts < s + divs * stars) { const k = Math.floor((pts - s) / stars); return name + ' ' + ['I', 'II', 'III'][divs - k - 1] + ' · ' + (pts - s - k * stars) + ' 星'; }
+    s += divs * stars;
+  }
+  return '王者 · ' + (pts - s) + ' 星';
+}
+const BOARDS = [['rank', '段位', ''], ['stars', '星星总数', ''], ['cleared', '通关关卡', ' 关'], ['weekCorrect', '本周答对', ' 题'], ['weekAccuracy', '本周正确率', '%'], ['bestStreak', '最佳连对', ' 题'], ['wins', '胜利场数', ' 场']];
+async function pageLeaderboard(view, seq) {
+  const d = await api('/api/admin/leaderboard');
+  if (stale(seq)) return;
+  view.innerHTML = '<h1>家庭排行榜</h1><p class="small muted">本周从 ' + fmtDay(d.weekStartsAt) + '（周一）开始。本周正确率至少答 ' + d.weekAccuracyMin + ' 题才上榜。孩子在游戏里看到的是同一份榜单。</p>' +
+    '<div class="grid">' + BOARDS.map(([k, name, unit]) => '<div class="card"><h3 style="margin-top:0">' + name + '</h3>' +
+      (d.boards[k].length ? '<ol class="podium">' + d.boards[k].map((x) => '<li><span class="rank r' + x.rank + '">' + x.rank + '</span><span>' + esc(x.name) + '</span><span class="sp"></span><b>' + (k === 'rank' ? rankLabel(x.value) : x.value + unit) + '</b></li>').join('') + '</ol>' : '<p class="small muted">暂无数据</p>') +
+      '</div>').join('') + '</div>' +
+    '<h2>显示设置</h2><div class="card"><p class="small muted" style="margin-top:0">取消勾选的孩子不会出现在榜单上（他自己也看不到排名）。</p><div class="row">' +
+    d.players.map((x) => '<label class="chk"><input type="checkbox" data-show="' + x.id + '"' + (x.hidden ? '' : ' checked') + '> ' + esc(x.name) + '</label>').join('') + '</div></div>';
+  $$('[data-show]', view).forEach((c) => c.addEventListener('change', act(async () => {
+    await api('/api/admin/players/' + c.dataset.show + '/settings', 'PUT', { hideFromLeaderboard: !c.checked });
+    toast('已更新');
+    await pageLeaderboard(view, state.renderSeq);
+  })));
+}
+
+// ------------------------------------------------------------ 启动
+if (state.pw) enter().catch((e) => showLogin(e.message));
+else showLogin('');
+</script>
+</body>
+</html>

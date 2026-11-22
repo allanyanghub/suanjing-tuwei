@@ -1,0 +1,23 @@
+{
+  "name": "suanjing-tuwei",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5183",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5184",
+    "typecheck": "tsc --noEmit",
+    "test:math": "node --experimental-strip-types scripts/check-math.ts && node --experimental-strip-types scripts/check-rank.ts && node --experimental-strip-types scripts/verify-g3b.ts && node --experimental-strip-types scripts/verify-g4b.ts"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.187.0",
+    "playwright-core": "^1.65.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}

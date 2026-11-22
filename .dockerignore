@@ -1,0 +1,9 @@
+node_modules
+dist
+data
+server/data
+server/test
+art-src
+.git
+*.log
+**/.DS_Store

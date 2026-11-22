@@ -1,0 +1,82 @@
+/* 算境突围 · 全局样式入口 */
+@import './ui/base.css';
+@import './ui/menus.css';
+@import './ui/buy.css';
+@import './ui/hud.css';
+@import './ui/touch.css';
+@import './ui/mobile.css';
+@import './ui/rank.css';
+
+/* 画面保护：上下文丢失遮罩、自动降画质提示（src/render/guard.ts） */
+.gfx-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 10, 19, 0.72);
+  color: #eef3ff;
+  font-family: 'Avenir Next', 'PingFang SC', 'HarmonyOS Sans SC', sans-serif;
+  user-select: none;
+}
+.gfx-overlay.stuck {
+  cursor: pointer;
+}
+.gfx-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.4rem 2rem;
+  border-radius: 14px;
+  background: rgba(16, 24, 41, 0.92);
+  border: 1px solid rgba(160, 190, 255, 0.26);
+  text-align: center;
+}
+.gfx-overlay.stuck .gfx-box {
+  border-color: #ff8a3d;
+}
+.gfx-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.gfx-sub {
+  font-size: 0.9rem;
+  color: #9aa7c4;
+}
+.gfx-spin {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.18);
+  border-top-color: #ffc44d;
+  animation: gfx-spin 0.9s linear infinite;
+}
+@keyframes gfx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.gfx-toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 88px);
+  left: 50%;
+  z-index: 1001;
+  transform: translate(-50%, -12px);
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(16, 24, 41, 0.9);
+  border: 1px solid rgba(255, 196, 77, 0.5);
+  color: #eef3ff;
+  font: 600 0.95rem 'Avenir Next', 'PingFang SC', 'HarmonyOS Sans SC', sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+}
+.gfx-toast.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

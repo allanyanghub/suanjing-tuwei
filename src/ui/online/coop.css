@@ -1,0 +1,760 @@
+/* ============================================================
+   合作模式：大厅（房间列表 / 建房选关 / 房间）与合作结算表
+   复用 base.css 的设计变量和 .panel / .btn / .grade-tab，类名统一用 cp- 前缀。
+   触控目标不小于 44px；矮屏（平板 / 手机横屏）紧凑排版。
+   ============================================================ */
+
+.cp-screen .screen-body {
+  gap: 1.4rem;
+}
+
+.cp-banner {
+  flex: none;
+  justify-content: space-between;
+}
+
+.cp-text {
+  font-size: max(1rem, 14px);
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0.6rem 0;
+}
+
+.cp-text.dim,
+.cp-facts .dim {
+  color: var(--muted);
+}
+
+.cp-acts {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.cp-guest {
+  max-width: 36rem;
+  margin: auto;
+  padding: 1.6rem 1.8rem;
+}
+
+.cp-wait {
+  margin: auto;
+  animation: cp-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes cp-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.cp-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: max(0.75rem, 12px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+  background: rgba(255, 196, 77, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 196, 77, 0.35);
+  white-space: nowrap;
+}
+
+.cp-tag.me {
+  color: var(--ally);
+  background: rgba(53, 214, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(53, 214, 255, 0.4);
+}
+
+.cp-tag.hot {
+  color: #ffb3a0;
+  background: rgba(255, 95, 61, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 95, 61, 0.4);
+}
+
+.cp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.7rem 0.2rem 0.25rem;
+  font-size: max(0.9rem, 13px);
+  background: rgba(160, 190, 255, 0.06);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.cp-chip.me {
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- 房间列表 */
+
+.cp-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cp-intro {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.2rem;
+}
+
+.cp-intro-text {
+  color: var(--muted);
+  font-size: max(0.95rem, 13px);
+}
+
+.cp-room-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1rem;
+  align-content: start;
+}
+
+.cp-room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.1rem 1.1rem;
+  box-shadow: inset 3px 0 0 var(--tc, var(--accent));
+  animation: slide-in 0.4s var(--ease) both;
+}
+
+.cp-room.is-playing {
+  opacity: 0.7;
+}
+
+.cp-room-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.cp-room-id {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+}
+
+.cp-room-no {
+  white-space: nowrap;
+  font-family: var(--font-num);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.cp-room-count {
+  color: var(--muted);
+  font-size: max(0.9rem, 13px);
+  white-space: nowrap;
+}
+
+.cp-room-level {
+  font-weight: 700;
+  font-size: max(1rem, 14px);
+}
+
+.cp-room-map {
+  color: var(--muted);
+  font-size: max(0.88rem, 12px);
+}
+
+.cp-room-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0.3rem;
+}
+
+.cp-room .btn {
+  align-self: flex-end;
+  min-width: 7rem;
+}
+
+.cp-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: clamp(1.4rem, 6vh, 4rem) 1rem;
+  text-align: center;
+}
+
+.cp-empty .empty-sub {
+  max-width: 32rem;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------- 选关 */
+
+.cp-pick-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.cp-tabs {
+  flex: none;
+}
+
+.cp-tabs .grade-tab {
+  display: block;
+  text-align: center;
+  min-height: 44px;
+}
+
+.cp-levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: 0.6rem;
+  align-content: start;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 0.4rem;
+}
+
+.cp-level {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-height: 3.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  background: rgba(14, 22, 40, 0.8);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.cp-level .btn-label {
+  font-weight: 700;
+  font-size: max(0.98rem, 14px);
+}
+
+.cp-level-sub {
+  font-size: max(0.8rem, 12px);
+  color: var(--accent-2);
+}
+
+.cp-level:hover {
+  background: rgba(30, 44, 74, 0.9);
+}
+
+.cp-level.is-selected {
+  background: rgba(36, 52, 88, 0.95);
+  box-shadow: inset 0 0 0 2px var(--tc, var(--accent));
+}
+
+.cp-level.is-locked {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.cp-level.is-locked .cp-level-sub {
+  color: var(--dim);
+}
+
+.cp-pick-side,
+.cp-room-right {
+  flex: none;
+  width: min(22rem, 34vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem 1.3rem;
+  box-shadow: inset 0 3px 0 var(--tc, var(--accent));
+}
+
+.cp-pick-side .btn-xl,
+.cp-room-acts .btn-xl {
+  margin-top: auto;
+}
+
+.cp-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: max(0.95rem, 13px);
+}
+
+/* ---------------------------------------------------------------- 房间 */
+
+.cp-room-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem 1.3rem;
+  overflow-y: auto;
+}
+
+.cp-members {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.cp-member {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(14, 22, 40, 0.75);
+  box-shadow: inset 3px 0 0 var(--ac, var(--ally));
+  animation: slide-in 0.35s var(--ease) both;
+}
+
+.cp-member.is-self {
+  background: rgba(30, 48, 80, 0.9);
+}
+
+.cp-member.is-bot {
+  opacity: 0.6;
+  box-shadow: inset 3px 0 0 var(--dim);
+}
+
+.cp-badge {
+  flex: none;
+}
+
+.cp-bot {
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: rgba(160, 190, 255, 0.08);
+}
+
+.cp-member-text {
+  min-width: 0;
+}
+
+.cp-member-name {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: max(1.1rem, 15px);
+  font-weight: 800;
+}
+
+.cp-member-name > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cp-member-sub {
+  color: var(--muted);
+  font-size: max(0.88rem, 12px);
+  margin-top: 0.15rem;
+}
+
+.cp-room-acts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cp-room-acts .btn {
+  width: 100%;
+}
+
+.cp-waiting:disabled {
+  opacity: 0.8;
+  animation: cp-pulse 1.8s ease-in-out infinite;
+}
+
+.cp-host-note {
+  color: var(--accent-2);
+  font-size: max(0.92rem, 13px);
+}
+
+/* 换角色：角色界面盖在大厅层里 */
+.cp-layer .cp-agent {
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------- 联机对战：选玩法 / 分队
+   队伍颜色：蓝队用我方蓝 --ally，红队用敌方红 --enemy（与 HUD 比分条一致） */
+
+.team-0 {
+  --team: var(--ally);
+  --team-bg: rgba(53, 214, 255, 0.1);
+}
+
+.team-1 {
+  --team: var(--enemy);
+  --team-bg: rgba(255, 77, 94, 0.1);
+}
+
+.cp-mode-tag.mode-coop {
+  color: var(--ally);
+  background: rgba(53, 214, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(53, 214, 255, 0.4);
+}
+
+.cp-mode-tag.mode-versus {
+  color: #ff9aa4;
+  background: rgba(255, 77, 94, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 77, 94, 0.45);
+}
+
+.cp-chip.team-0,
+.cp-chip.team-1 {
+  box-shadow: inset 0 0 0 1px var(--line), inset 3px 0 0 var(--team);
+}
+
+.cp-room-teams {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: max(0.9rem, 13px);
+  font-weight: 700;
+}
+
+.cp-team-n {
+  color: var(--team);
+}
+
+.cp-vs {
+  color: var(--muted);
+  font-family: var(--font-num);
+  font-size: 0.8em;
+  letter-spacing: 0.1em;
+}
+
+/* 建房第一步：两张大卡片 */
+.cp-modes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  align-content: center;
+  max-width: 54rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cp-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-height: 12rem;
+  padding: 1.5rem 1.6rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  transition: transform 0.15s var(--ease), background 0.15s;
+  animation: slide-in 0.4s var(--ease) both;
+}
+
+.cp-mode.mode-coop {
+  box-shadow: inset 0 3px 0 var(--ally), inset 0 0 0 1px var(--line);
+}
+
+.cp-mode.mode-versus {
+  box-shadow: inset 0 3px 0 var(--enemy), inset 0 0 0 1px var(--line);
+  animation-delay: 0.06s;
+}
+
+.cp-mode:hover {
+  transform: translateY(-2px);
+  background: rgba(30, 44, 74, 0.9);
+}
+
+.cp-mode .btn-label {
+  font-size: max(1.9rem, 24px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.cp-mode-short {
+  font-size: max(1.15rem, 15px);
+  font-weight: 800;
+  color: var(--accent-2);
+}
+
+.cp-mode-text {
+  color: var(--muted);
+  font-size: max(0.98rem, 13px);
+  line-height: 1.55;
+}
+
+.cp-mode-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.cp-mode-icon i {
+  display: block;
+  width: 2.2rem;
+  height: 0.55rem;
+  background: var(--team);
+  box-shadow: 0 0 10px var(--team);
+}
+
+.cp-mode-icon b {
+  font-family: var(--font-num);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* 房间：蓝队 / 红队两栏 */
+.cp-teams {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.cp-team-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.cp-team-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  background: var(--team-bg);
+  box-shadow: inset 0 -2px 0 var(--team);
+}
+
+.cp-team-name {
+  color: var(--team);
+  font-size: max(1.15rem, 15px);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.cp-team-count {
+  color: var(--muted);
+  font-size: max(0.82rem, 12px);
+  white-space: nowrap;
+}
+
+.cp-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.cp-team-col .cp-member:not(.is-bot) {
+  box-shadow: inset 3px 0 0 var(--team);
+}
+
+.cp-team-col .cp-member-text {
+  flex: 1;
+}
+
+/* 房主给别人换队的小按钮 */
+.cp-move {
+  flex: none;
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: max(0.82rem, 12px);
+  font-weight: 700;
+  color: var(--team);
+  background: var(--team-bg);
+  box-shadow: inset 0 0 0 1px var(--team);
+  white-space: nowrap;
+}
+
+.cp-move:hover {
+  filter: brightness(1.25);
+}
+
+.cp-switch.team-0,
+.cp-switch.team-1 {
+  color: var(--team);
+  box-shadow: inset 0 0 0 1px var(--team);
+}
+
+.cp-start-hint {
+  margin-top: auto;
+  padding: 0.5rem 0.7rem;
+  color: var(--accent-2);
+  font-size: max(0.92rem, 13px);
+  font-weight: 700;
+  text-align: center;
+  background: rgba(255, 196, 77, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 196, 77, 0.3);
+}
+
+.cp-start-hint + .btn-xl {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- 合作结算 */
+
+.cp-team {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: max(0.95rem, 13px);
+}
+
+.cp-team th {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: max(0.78rem, 12px);
+  letter-spacing: 0.08em;
+  text-align: right;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.cp-team th:first-child,
+.cp-team td:first-child {
+  text-align: left;
+}
+
+.cp-team td {
+  text-align: right;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-num);
+}
+
+.cp-team td:first-child {
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+.cp-team tr.is-self td {
+  background: rgba(53, 214, 255, 0.08);
+}
+
+.cp-team .cp-grade {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.85em;
+  margin-left: 0.4rem;
+}
+
+.cp-res-note {
+  color: var(--muted);
+  font-size: max(0.9rem, 13px);
+  margin: 0.4rem 0 0.2rem;
+}
+
+/* ---------------------------------------------------------------- 矮屏 / 窄屏 */
+
+@media (max-height: 560px) {
+  .cp-room-left,
+  .cp-pick-side,
+  .cp-room-right {
+    padding: 0.8rem 0.9rem;
+    gap: 0.5rem;
+  }
+  .cp-members {
+    gap: 0.5rem;
+  }
+  .cp-member {
+    padding: 0.45rem 0.6rem;
+  }
+  .cp-text {
+    margin: 0.3rem 0;
+  }
+  .cp-room-acts {
+    gap: 0.45rem;
+  }
+}
+
+@media (max-height: 560px) {
+  .cp-teams,
+  .cp-team-list,
+  .cp-team-col {
+    gap: 0.4rem;
+  }
+  .cp-team-head {
+    padding: 0.2rem 0.6rem;
+  }
+  .cp-mode {
+    min-height: 0;
+    padding: 1rem 1.1rem;
+  }
+  .cp-team-col .cp-badge {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+  /* 对战房间右栏多了「换队」按钮和提示：压紧一点，让「开始」不用滚动就能看到 */
+  .cp-room-right.is-versus .cp-facts {
+    gap: 0.1rem;
+    font-size: 13px;
+  }
+  /* 「每队 N 人」两栏标题里已经有了 */
+  .cp-room-right.is-versus .cp-facts > div:nth-child(3) {
+    display: none;
+  }
+  .cp-room-right.is-versus .brief-title {
+    font-size: 1.15rem;
+  }
+  .cp-room-right.is-versus .cp-room-acts .btn:not(.btn-xl) {
+    min-height: 40px;
+  }
+  .cp-start-hint {
+    padding: 0.2rem 0.4rem;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cp-members {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cp-team-col .cp-member {
+    gap: 0.5rem;
+  }
+  .cp-move {
+    padding: 0 0.45rem;
+  }
+  .cp-pick-side,
+  .cp-room-right {
+    width: 15rem;
+  }
+}
+
+/* 很窄的竖屏窗口（桌面浏览器拉窄）：左右两栏改成上下排 */
+@media (max-width: 600px) and (orientation: portrait) {
+  .cp-screen .screen-body {
+    flex-direction: column;
+  }
+  .cp-pick-side,
+  .cp-room-right {
+    width: auto;
+  }
+  .cp-room-left {
+    flex: none;
+    overflow: visible;
+  }
+  .cp-modes,
+  .cp-teams {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

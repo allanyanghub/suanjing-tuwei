@@ -1,0 +1,15 @@
+{
+  "name": "算境突围",
+  "short_name": "算境突围",
+  "description": "原创奥数战术射击游戏，适合三至六年级小学生",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#060a13",
+  "theme_color": "#060a13",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

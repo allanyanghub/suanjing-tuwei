@@ -1,0 +1,44 @@
+# ---------------- 2.5x prism optic with etched reticle
+OZ = RT + 0.034     # optic axis height
+yb = 0.0
+box('op_base', (0.03, 0.07, 0.008), (0, yb + 0.02, RT + 0.004), A, bev=0.0012)
+for py in (yb - 0.002, yb + 0.042):
+    box('op_clamp', (0.006, 0.014, 0.012), (0.0165, py, RT - 0.002), A, bev=0.0012)
+    cyl('op_knob', 0.0045, 0.007, (0.022, py, RT - 0.002), mat=S, axis='X', segs=16, bev=0.0005)
+body = front('op_body', rrect(0.04, 0.036, 0.008, 5, 0, OZ), 0.07, A, y=yb - 0.015, bev=0)
+cut(body, merge_bm('c_opflat', [bm_box((0.004, 0.05, 0.014), (sx * 0.0205, yb + 0.02, OZ + 0.004)) for sx in (-1, 1)], cutter=True))
+cut(body, cyl('c_opbore', 0.0145, 0.2, (0, yb, OZ), axis='Y', segs=32, cutter=True))
+bevel(body, 0.0012, 2)
+box('op_neck', (0.026, 0.05, 0.012), (0, yb + 0.02, RT + 0.012), A, bev=0.002)
+lathe('op_obj', [(0.0145, yb + 0.055), (0.019, yb + 0.07), (0.0205, yb + 0.1), (0.019, yb + 0.103), (0.0165, yb + 0.103), (0.0165, yb + 0.095), (0.0145, yb + 0.06)],
+      40, loc=(0, 0, OZ), mat=A, closed=True, bev=0.0006)
+cyl('op_objglass', 0.0166, 0.002, (0, yb + 0.096, OZ), mat=M['glass'], segs=36)
+lathe('op_eye', [(0.0145, yb - 0.015), (0.0165, yb - 0.025), (0.0175, yb - 0.05), (0.0185, yb - 0.06), (0.0175, yb - 0.064), (0.0145, yb - 0.064)],
+      40, loc=(0, 0, OZ), mat=A, closed=True, bev=0.0006)
+lathe('op_cup', [(0.0185, yb - 0.064), (0.0195, yb - 0.066), (0.0195, yb - 0.078), (0.0175, yb - 0.08), (0.0155, yb - 0.08), (0.0155, yb - 0.066)],
+      40, loc=(0, 0, OZ), mat=RB, closed=True)
+kr = lathe('op_ring', [(0.0172, yb - 0.04), (0.0188, yb - 0.04), (0.0188, yb - 0.028), (0.0172, yb - 0.028)], 40, loc=(0, 0, OZ), mat=A, closed=True)
+kn = [bm_box((0.002, 0.014, 0.002), (0.0189 * math.cos(R(a)), yb - 0.034, OZ + 0.0189 * math.sin(R(a))), (0, R(-a + 90), 0)) for a in range(0, 360, 15)]
+cut(kr, merge_bm('c_opk', kn, cutter=True))
+cyl('op_turret_t', 0.009, 0.01, (0, yb + 0.02, OZ + 0.023), mat=A, axis='Z', segs=28, bev=0.0008)
+cyl('op_turret_r', 0.009, 0.01, (0.025, yb + 0.02, OZ), mat=A, axis='X', segs=28, bev=0.0008)
+cyl('op_illum', 0.0105, 0.012, (-0.026, yb + 0.02, OZ), mat=A, axis='X', segs=28, bev=0.0008)
+for k in range(12):
+    a = R(30 * k)
+    box('op_tick', (0.0008, 0.0012, 0.003), (0.009 * math.cos(a), yb + 0.02 + 0.009 * math.sin(a), OZ + 0.028), S)
+cyl('op_eyeglass', 0.0146, 0.002, (0, yb - 0.063, OZ), mat=M['glass'], segs=36)
+# etched reticle in the eyepiece focal plane: horizontal bars, lower post, BDC stadia, chevron
+RET = pmat('m_ret', (0.01, 0.01, 0.01), 0.0, 0.5, wear=0.0, bump=0.0)
+ry = yb - 0.045
+for (w, h, x, z) in ((0.011, 0.00045, -0.0085, 0.0), (0.011, 0.00045, 0.0085, 0.0), (0.00045, 0.011, 0.0, -0.0085)):
+    box('reticle', (w, 0.0003, h), (x, ry, OZ + z), RET)
+for k, dz in enumerate((-0.0022, -0.0042, -0.0062)):
+    box('reticle', (0.0022 - k * 0.0004, 0.0003, 0.00035), (0, ry, OZ + dz), RET)
+for sx in (-1, 1):
+    box('reticle', (0.0019, 0.0003, 0.00045), (sx * 0.0007, ry, OZ - 0.0006), RET, rot=(0, R(40 * sx), 0))
+# folded BUIS
+box('rs_base', (0.02, 0.018, 0.006), (0, -0.1, RT + 0.003), A, bev=0.001)
+prof('rs_leaf', [(-0.11, RT + 0.006), (-0.09, RT + 0.006), (-0.093, RT + 0.011), (-0.107, RT + 0.011)], 0.016, A, bev=0.0008)
+box('fs_base', (0.02, 0.018, 0.006), (0, 0.505, RT + 0.003), A, bev=0.001)
+prof('fs_leaf', [(0.496, RT + 0.006), (0.516, RT + 0.006), (0.513, RT + 0.01), (0.499, RT + 0.01)], 0.014, A, bev=0.0008)
+

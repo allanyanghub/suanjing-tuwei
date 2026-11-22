@@ -20,8 +20,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
----
-
-Third-party assets under public/assets/ keep their own licences (mostly
-CC0 1.0 from Poly Haven and MakeHuman; characters/soldier.glb comes from the
-three.js examples and originates from Mixamo). See public/assets/CREDITS.md.

@@ -1,3 +1,5 @@
+> The project's own code and original assets are MIT-licensed (see `LICENSE` in the repository root). The third-party assets listed below keep their own licences.
+
 
 ## Characters
 
